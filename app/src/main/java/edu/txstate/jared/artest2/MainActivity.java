@@ -25,6 +25,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "mainLog"; // for making filters in logcat
     private Editable username;
+    private DBHelper mDB;
 
 
     @Override
@@ -33,6 +34,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        mDB = new DBHelper(this);       // init database
+        mDB.spoofData();
 
         final EditText usernameBox = (EditText) findViewById(R.id.usernameBox);
         EditText pwdBox = (EditText) findViewById(R.id.pwdBox);
