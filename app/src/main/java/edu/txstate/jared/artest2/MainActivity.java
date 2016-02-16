@@ -9,8 +9,6 @@ package edu.txstate.jared.artest2;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
@@ -23,7 +21,7 @@ import android.widget.EditText;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final String TAG = "mainLog"; // for making filters in logcat
+    private static final String TAG = "MAINACT"; // for making filters in logcat
     private Editable username;
     private DBHelper mDB;
 
@@ -35,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         mDB = new DBHelper(this);       // init database
-        mDB.spoofData();
+        mDB.spoofUserData();                // comment this line out to not insert fake data into table
 
         final EditText usernameBox = (EditText) findViewById(R.id.usernameBox);
         EditText pwdBox = (EditText) findViewById(R.id.pwdBox);
