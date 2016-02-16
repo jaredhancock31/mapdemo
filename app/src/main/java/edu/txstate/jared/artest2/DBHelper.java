@@ -43,7 +43,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 "surname TEXT, " +
                 "username TEXT, " +
                 "email TEXT)");
-        db.execSQL("CREATE TABLE" + DDROP_TABLE + "(drop_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+        db.execSQL("CREATE TABLE " + DDROP_TABLE + " (drop_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 "submitter_id TEXT, " +
                 "filename TEXT, " +
                 "date_dropped INTEGER)"); // TODO sqlite uses integer for unix time, change if using postgres
