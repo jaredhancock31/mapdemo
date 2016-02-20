@@ -20,6 +20,7 @@ import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
+
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.drive.Drive;
@@ -29,10 +30,8 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-
 import java.text.DateFormat;
 import java.util.Date;
-
 import static com.google.android.gms.location.LocationServices.*;
 
 /**
@@ -46,11 +45,9 @@ import static com.google.android.gms.location.LocationServices.*;
 
 public class MapsActivity extends FragmentActivity
         implements
-        LocationListener,
-        GoogleApiClient.ConnectionCallbacks,
         OnMapReadyCallback,
         ActivityCompat.OnRequestPermissionsResultCallback,
-        GoogleMap.OnMyLocationButtonClickListener, GoogleApiClient.OnConnectionFailedListener {
+        GoogleMap.OnMyLocationButtonClickListener {
 
     /**
      * The desired interval for location updates. Inexact. Updates may be more or less frequent.
@@ -71,6 +68,7 @@ public class MapsActivity extends FragmentActivity
     private static final String LOCATION_KEY = "location-key";
     private static final String LAST_UPDATE_TIME_KEY = "last-update-time-key";
 
+    private LocManager locManager;
 
     private GoogleMap mMap;
     private GoogleApiClient mGoogleApiClient;
@@ -89,10 +87,7 @@ public class MapsActivity extends FragmentActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-        mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        Criteria criteria = new Criteria();
-        mProviderName = mLocationManager.getBestProvider(criteria, true);
-        mRequestingLocationUpdates = false;
+        locManager = new LocManager(this, (LocationManager) getSystemService(Context.LOCATION_SERVICE));
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -102,13 +97,7 @@ public class MapsActivity extends FragmentActivity
         // update vals using data stored in the Bundle
         updateValuesFromBundle(savedInstanceState);
 
-        /* build api client */
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addApi(Drive.API)
-                .addScope(Drive.SCOPE_FILE)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .build();
+
     }
 
     /**
@@ -125,6 +114,7 @@ public class MapsActivity extends FragmentActivity
         mMap.setOnMyLocationButtonClickListener(this);
         enableMyLocation();
         onMyLocationButtonClick();
+
     }
 
 
@@ -143,148 +133,31 @@ public class MapsActivity extends FragmentActivity
 
 
     protected void onStart() {
-        mGoogleApiClient.connect();
+        locManager.mGoogleApiClient.connect();
         super.onStart();
     }
 
     protected void onStop() {
-        mGoogleApiClient.disconnect();
+        locManager.mGoogleApiClient.disconnect();
         super.onStop();
     }
 
-    /**
-     * Builds a GoogleApiClient. Uses the {@code #addApi} method to request the
-     * LocationServices API.
-     */
-    protected synchronized void buildGoogleApiClient() {
-        Log.i(TAG, "Building GoogleApiClient");
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this)
-                .addApi(API)
-                .build();
-        createLocationRequest();
-    }
 
-
-    /**
-     * Sets up the location request. Android has two location request settings:
-     * {@code ACCESS_COARSE_LOCATION} and {@code ACCESS_FINE_LOCATION}. These settings control
-     * the accuracy of the current location. This sample uses ACCESS_FINE_LOCATION, as defined in
-     * the AndroidManifest.xml.
-     * <p/>
-     * When the ACCESS_FINE_LOCATION setting is specified, combined with a fast update
-     * interval (5 seconds), the Fused Location Provider API returns location updates that are
-     * accurate to within a few feet.
-     * <p/>
-     * These settings are appropriate for mapping applications that show real-time location
-     * updates.
-     */
-    protected void createLocationRequest() {
-        mRequestingLocationUpdates = true;
-        mLocationRequest = new LocationRequest();
-
-        // Sets the desired interval for active location updates. This interval is
-        // inexact. You may not receive updates at all if no location sources are available, or
-        // you may receive them slower than requested. You may also receive updates faster than
-        // requested if other applications are requesting location at a faster interval.
-        mLocationRequest.setInterval(UPDATE_INTERVAL_IN_MILLISECONDS);
-
-        // Sets the fastest rate for active location updates. This interval is exact, and your
-        // application will never receive updates faster than this value.
-        mLocationRequest.setFastestInterval(FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS);
-
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-    }
-
-
-    /**
-     * Requests location updates from the FusedLocationApi.
-     */
-    protected void startLocationUpdates() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) !=
-                PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) !=
-                        PackageManager.PERMISSION_GRANTED) {
-
-            LocationServices.FusedLocationApi.requestLocationUpdates(
-                    mGoogleApiClient, mLocationRequest, (com.google.android.gms.location.LocationListener) this);
-        }
-    }
-
-    @Override
-    public void onConnected(Bundle bundle) {
-        Log.i(TAG, "Connected to GoogleApiClient");
-        mLastUpdateTime = DateFormat.getDateTimeInstance().format(new Date());
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            mCurrentLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-            if (mCurrentLocation != null) {
-                LatLng currentLatLng = new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
-            }
-        }
-
-        // If the user presses the Start Updates button before GoogleApiClient connects, we set
-        // mRequestingLocationUpdates to true (see startUpdatesButtonHandler()). Here, we check
-        // the value of mRequestingLocationUpdates and if it is true, we start location updates.
-        if (mRequestingLocationUpdates) {
-            startLocationUpdates();
-        }
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-        // The connection to Google Play services was lost for some reason. We call connect() to
-        // attempt to re-establish the connection.
-        Log.i(TAG, "Connection suspended");
-        mGoogleApiClient.connect();
-    }
-
-    @Override
-    public void onLocationChanged(Location location) {
-        mCurrentLocation = location;
-        mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
-        onMyLocationButtonClick(); // re-center map view on current location
-    }
-
-
-
-    /* LocationListener method */
+    /* LocationListener method TODO stoplocationrequests in LocManager? */
     @Override
     public void onPause() {
         super.onPause();
-        stopLocationUpdates();
+        locManager.stopLocationUpdates();
     }
 
-    protected void stopLocationUpdates() {
-        LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, (com.google.android.gms.location.LocationListener) this);
-    }
 
     /* LocationListener method */
     @Override
     public void onResume() {
         super.onResume();
-        if(mGoogleApiClient.isConnected() && !mRequestingLocationUpdates) {
-            startLocationUpdates();
+        if(locManager.mGoogleApiClient.isConnected() && !mRequestingLocationUpdates) {
+            locManager.startLocationUpdates();
         }
-    }
-
-    @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {
-
-    }
-
-    @Override
-    public void onProviderEnabled(String provider) {
-
-    }
-
-    @Override
-    public void onProviderDisabled(String provider) {
-
-    }
-
-    @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
-
     }
 
 
@@ -366,6 +239,7 @@ public class MapsActivity extends FragmentActivity
                 mLastUpdateTime = savedInstanceState.getString(LAST_UPDATE_TIME_KEY);
             }
         }
+
     }
 
 
