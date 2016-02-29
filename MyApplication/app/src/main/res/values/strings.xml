@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">MenuDemo</string>
+    <string name="google_app_id">sixth-cider-120305</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="newDropButtonText">New Drop</string>
+    <string name="messageDropButtonText">Text</string>
+    <string name="dropTypePromptText">Select Drop Type:</string>
+    <string name="submitButtonText">Submit</string>
+    <string name="title_activity_maps">Map</string>
+</resources>
