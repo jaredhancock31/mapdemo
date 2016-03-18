@@ -3,7 +3,6 @@ package edu.txstate.jared.menudemo;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -17,26 +16,18 @@ import android.view.View;
 import android.widget.Button;
 
 
-import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.drive.Drive;
 import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.sql.Timestamp;
-import java.text.DateFormat;
-import java.util.Date;
 
-import edu.txstate.jared.api.AsyncPost;
+import edu.txstate.jared.api.ReqManager;
 import edu.txstate.jared.fragments.DropTypeFragment;
-import edu.txstate.jared.fragments.MainFragment;
 import edu.txstate.jared.fragments.TextDropFragment;
-
-import static com.google.android.gms.location.LocationServices.*;
 
 /**
  * Activity responsible for housing the Google Maps object
@@ -59,23 +50,20 @@ public class MapsActivity extends FragmentActivity
      * The desired interval for location updates. Inexact. Updates may be more or less frequent.
      */
     public static final long UPDATE_INTERVAL_IN_MILLISECONDS = 10000;
-
     /**
      * The fastest rate for active location updates. Exact. Updates will never be more frequent
      * than this value.
      */
     public static final long FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS =
             UPDATE_INTERVAL_IN_MILLISECONDS / 2;
-
     private static final String TAG = "mapsLog";
     private static final int MY_PERMISSION_ACCESS_COARSE_LOCATION = 11;
     private static final int MY_PERMISSION_ACCESS_FINE_LOCATION = 12;
     private static final String REQUESTING_LOCATION_UPDATES_KEY = "requesting-location-updates-key";
     private static final String LOCATION_KEY = "location-key";
     private static final String LAST_UPDATE_TIME_KEY = "last-update-time-key";
-
     private LocManager locManager;
-
+    private ReqManager reqManager;
     private GoogleMap mMap;
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
@@ -84,8 +72,6 @@ public class MapsActivity extends FragmentActivity
     private LocationManager mLocationManager;
     private LocationListener mLocationListener;
     private Location mCurrentLocation;
-
-
     private boolean mRequestingLocationUpdates;
 
 
@@ -94,6 +80,7 @@ public class MapsActivity extends FragmentActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         locManager = new LocManager(this, (LocationManager) getSystemService(Context.LOCATION_SERVICE));
+        reqManager = ReqManager.getReqManager();
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -112,9 +99,6 @@ public class MapsActivity extends FragmentActivity
 
         // update vals using data stored in the Bundle
         updateValuesFromBundle(savedInstanceState);
-
-
-
 
     }
 
@@ -145,7 +129,6 @@ public class MapsActivity extends FragmentActivity
     @Override
     public boolean onMyLocationButtonClick() {
         Log.i(TAG, "MyLocation button clicked.");
-
         return false;
     }
 
@@ -275,18 +258,23 @@ public class MapsActivity extends FragmentActivity
         fm.beginTransaction().replace(fm.findFragmentById(R.id.fragment_container).getId(), textDrop).commit();
     }
 
+
+    /**
+     * When a new droplet is submitted, this method tells the ReqManager to start up a new asyncPost
+     * and save the droplet to the server.
+     * @param dropMessage message to leave at the droplet location
+     * @param timestamp timestamp of the droplet submission
+     */
     @Override
     public void onDropSubmit(String dropMessage, Timestamp timestamp) {
         LatLng currentLatLng = locManager.getMyCurrentLatLng();
-        int userID = 1234;
+        int userID = 1234; // TODO change this to a real id
 
         // TODO change 0 for drop_id to autoincrement
-        DataDrop dataDrop = new DataDrop(userID, currentLatLng.latitude, currentLatLng.longitude,
+        DataDrop droplet = new DataDrop(userID, currentLatLng.latitude, currentLatLng.longitude,
                 dropMessage, timestamp);
 
-        AsyncPost post = new AsyncPost(dataDrop.getDropAsString());
-
-
+        reqManager.startPost(droplet);
     }
 
 }

@@ -6,34 +6,27 @@ import android.util.Log;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.util.HashMap;
 
-import edu.txstate.jared.menudemo.DataDrop;
-
 /**
  * This class is a basic Http POST to the server
  */
-public class AsyncPost extends AsyncTask {
+public class AsyncPost extends AsyncTask<String, Void, Boolean> {
 
     private String TAG = "ASYNCPOST";
     private HashMap<String, String> pMap;
     private String paramString;
 
-    public AsyncPost(HashMap<String, String> params) {
-        this.pMap = params;
-    }
+    public AsyncPost() {}
 
-    public AsyncPost (String params) {
-        this.paramString = params;
-    }
     @Override
-    protected Object doInBackground(Object[] params) {
+    protected Boolean doInBackground(String... params) {
         try {
+            paramString = params[0];
             URL hostUrl = new URL("http://104.236.181.178");
             HttpURLConnection conn = (HttpURLConnection) hostUrl.openConnection();
             conn.setRequestMethod("POST");
@@ -44,18 +37,23 @@ public class AsyncPost extends AsyncTask {
             os.close();
 
             int responseCode = conn.getResponseCode();
-            Log.i(TAG, "Post response Code : " + responseCode );
+            Log.i(TAG, "Post response Code : " + responseCode);
 
 
         } catch (MalformedURLException e) {
             e.printStackTrace();
+            return false;
         } catch (ProtocolException e) {
             e.printStackTrace();
+            return false;
         } catch (IOException e) {
             e.printStackTrace();
+            return false;
         }
-
-
-        return null;
+        return true;
     }
+
+//    public AsyncPost(HashMap<String, String> params) {
+//        this.pMap = params;
+//    }
 }
