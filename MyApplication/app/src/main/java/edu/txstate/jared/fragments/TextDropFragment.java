@@ -48,7 +48,6 @@ public class TextDropFragment extends Fragment {
      * this fragment using the provided parameters.
      *
      * @param type type of drop (text or media)
-     * @param param2 Parameter 2.
      * @return A new instance of fragment TextDropFragment.
      */
     // TODO: Rename and change types and number of parameters

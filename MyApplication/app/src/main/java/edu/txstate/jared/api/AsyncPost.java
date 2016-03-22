@@ -1,6 +1,7 @@
 package edu.txstate.jared.api;
 
 import android.os.AsyncTask;
+import android.util.Base64;
 import android.util.Log;
 
 
@@ -26,9 +27,11 @@ public class AsyncPost extends AsyncTask<String, Void, Boolean> {
     @Override
     protected Boolean doInBackground(String... params) {
         try {
+            String basicAuth = "Basic " + Base64.encodeToString("txstate:poopscoop".getBytes(), Base64.NO_WRAP);
             paramString = params[0];
             URL hostUrl = new URL("http://104.236.181.178");
             HttpURLConnection conn = (HttpURLConnection) hostUrl.openConnection();
+            conn.setRequestProperty("Authorization", basicAuth);
             conn.setRequestMethod("POST");
             conn.setDoOutput(true);
             OutputStream os = conn.getOutputStream();

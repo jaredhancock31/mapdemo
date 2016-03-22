@@ -1,6 +1,7 @@
 package edu.txstate.jared.api;
 
 import android.os.AsyncTask;
+import android.util.Base64;
 import android.util.Log;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -21,9 +22,11 @@ public class AsyncGet extends AsyncTask<String, Void, Boolean> {
     @Override
     protected Boolean doInBackground(String... params) {
         try {
+            String basicAuth = "Basic " + Base64.encodeToString("txstate:poopscoop".getBytes(), Base64.NO_WRAP);
             String paramString = params[0];
             URL hostUrl = new URL("http://104.236.181.178");
             HttpURLConnection conn = (HttpURLConnection) hostUrl.openConnection();
+            conn.setRequestProperty("Authorization", basicAuth);
             conn.setRequestMethod("GET");
             conn.setDoOutput(true);
             OutputStream os = conn.getOutputStream();
@@ -33,7 +36,7 @@ public class AsyncGet extends AsyncTask<String, Void, Boolean> {
 
             int responseCode = conn.getResponseCode();
             Log.i(TAG, "Post response Code : " + responseCode);
-
+            // TODO handle, parse response
 
         } catch (MalformedURLException e) {
             e.printStackTrace();

@@ -16,18 +16,25 @@ import android.view.View;
 import android.widget.Button;
 
 
+import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.util.Date;
 
 import edu.txstate.jared.api.ReqManager;
 import edu.txstate.jared.fragments.DropTypeFragment;
 import edu.txstate.jared.fragments.TextDropFragment;
+
+import static com.google.android.gms.location.LocationServices.API;
 
 /**
  * Activity responsible for housing the Google Maps object
@@ -41,10 +48,12 @@ import edu.txstate.jared.fragments.TextDropFragment;
 public class MapsActivity extends FragmentActivity
         implements
         OnMapReadyCallback,
+        com.google.android.gms.location.LocationListener,
         ActivityCompat.OnRequestPermissionsResultCallback,
         GoogleMap.OnMyLocationButtonClickListener,
         DropTypeFragment.OnFragmentInteractionListener,
-        TextDropFragment.OnFragmentInteractionListener {
+        TextDropFragment.OnFragmentInteractionListener,
+        DropletDiscoveryListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     /**
      * The desired interval for location updates. Inexact. Updates may be more or less frequent.
@@ -56,13 +65,15 @@ public class MapsActivity extends FragmentActivity
      */
     public static final long FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS =
             UPDATE_INTERVAL_IN_MILLISECONDS / 2;
-    private static final String TAG = "mapsLog";
+
+    private static final String TAG = "MAPSLOG";
     private static final int MY_PERMISSION_ACCESS_COARSE_LOCATION = 11;
     private static final int MY_PERMISSION_ACCESS_FINE_LOCATION = 12;
     private static final String REQUESTING_LOCATION_UPDATES_KEY = "requesting-location-updates-key";
     private static final String LOCATION_KEY = "location-key";
     private static final String LAST_UPDATE_TIME_KEY = "last-update-time-key";
-    private LocManager locManager;
+//    private LocManager locManager;
+    private LocationManager locationManager;
     private ReqManager reqManager;
     private GoogleMap mMap;
     private GoogleApiClient mGoogleApiClient;
@@ -79,8 +90,11 @@ public class MapsActivity extends FragmentActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-        locManager = new LocManager(this, (LocationManager) getSystemService(Context.LOCATION_SERVICE));
-        reqManager = ReqManager.getReqManager();
+//        locManager = new LocManager(this, (LocationManager) getSystemService(Context.LOCATION_SERVICE));
+        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        reqManager = new ReqManager(this);
+        buildGoogleApiClient();
+        createLocationRequest();
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -129,17 +143,20 @@ public class MapsActivity extends FragmentActivity
     @Override
     public boolean onMyLocationButtonClick() {
         Log.i(TAG, "MyLocation button clicked.");
+        //TODO tell reqManager to search for droplets near current location
+        mRequestingLocationUpdates = true;
+//        reqManager.lookForDropletsNearby(locManager.getMyCurrentLocation());
         return false;
     }
 
 
     protected void onStart() {
-        locManager.mGoogleApiClient.connect();
+        mGoogleApiClient.connect();
         super.onStart();
     }
 
     protected void onStop() {
-        locManager.mGoogleApiClient.disconnect();
+//        locManager.mGoogleApiClient.disconnect();
         super.onStop();
     }
 
@@ -156,11 +173,24 @@ public class MapsActivity extends FragmentActivity
     @Override
     public void onResume() {
         super.onResume();
-        if(locManager.mGoogleApiClient.isConnected() && !mRequestingLocationUpdates) {
-            locManager.startLocationUpdates();
+        if(mGoogleApiClient.isConnected() && !mRequestingLocationUpdates) {
+            startLocationUpdates();
         }
     }
 
+
+    /**
+     * Builds a GoogleApiClient. Uses the {@code #addApi} method to request the
+     * LocationServices API.
+     */
+    public synchronized void buildGoogleApiClient() {
+        Log.d(TAG, "Building GoogleApiClient");
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addApi(API)
+                .addOnConnectionFailedListener(this)
+                .build();
+    }
 
     /**
      * Enables the My Location layer if the fine location permission has been granted.
@@ -168,14 +198,20 @@ public class MapsActivity extends FragmentActivity
     private void enableMyLocation() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // Permission to ACCESS_FINE_LOCATION is missing.
+            Log.d(TAG, "permission to fine location is missing");
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSION_ACCESS_FINE_LOCATION);
-        } else if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // Permission to ACCESS_COARSE_LOCATION is missing
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, MY_PERMISSION_ACCESS_COARSE_LOCATION);
-        } else if (mMap != null) {
+        }
+//        else if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+//            // Permission to ACCESS_COARSE_LOCATION is missing
+//            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, MY_PERMISSION_ACCESS_COARSE_LOCATION);
+//        }
+        else if (mMap != null) {
+            Log.d(TAG, "permission for fine location has been granted. setting the map to have location enabled");
             // Access to the location has been granted to the app.
             mMap.setMyLocationEnabled(true);
-
+        }
+        else {
+            Log.e(TAG, "hit the else case in enableMyLocation");
         }
     }
 
@@ -187,32 +223,16 @@ public class MapsActivity extends FragmentActivity
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
 
-        if (requestCode == MY_PERMISSION_ACCESS_COARSE_LOCATION || requestCode == MY_PERMISSION_ACCESS_FINE_LOCATION) {
-            Log.i(TAG, "Received response for Location permission request.");
-            switch (requestCode) {
-                case MY_PERMISSION_ACCESS_COARSE_LOCATION: {
-                    if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                        Log.i(TAG, "LOCATION permission granted");
-                        // TODO run map task fragment?
-                    } else {
-                        Log.i(TAG, "LOCATION permission was NOT granted.");
-                        // TODO give some message, return to main menu
-                    }
-                    break;
+        switch (requestCode) {
+            case MY_PERMISSION_ACCESS_FINE_LOCATION:
+                if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    enableMyLocation();
                 }
-                case MY_PERMISSION_ACCESS_FINE_LOCATION: {
-                    if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                        // permission was granted
-                        Log.i(TAG, "LOCATION permission granted");
-                        // TODO run map task fragment?
-                    } else {
-                        // permission denied
-                        Log.i(TAG, "LOCATION permission was NOT granted.");
-                        // TODO give some message, return to main menu
-                    }
-                    break;
-                }
-            }
+                return;
+            default:
+                Log.e(TAG, "location permission denied");
+                return;
+
         }
     }
 
@@ -267,14 +287,122 @@ public class MapsActivity extends FragmentActivity
      */
     @Override
     public void onDropSubmit(String dropMessage, Timestamp timestamp) {
-        LatLng currentLatLng = locManager.getMyCurrentLatLng();
-        int userID = 1234; // TODO change this to a real id
+//        Location loc = locationManager.getLastKnownLocation(mProviderName);
+        if (mCurrentLocation != null) {
+            LatLng currentLatLng = new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
+            int userID = 1234; // TODO change this to a real id
+            Log.d(TAG, "JARED onDropSubmit: latitude =" + currentLatLng.latitude);
 
-        // TODO change 0 for drop_id to autoincrement
-        DataDrop droplet = new DataDrop(userID, currentLatLng.latitude, currentLatLng.longitude,
-                dropMessage, timestamp);
 
-        reqManager.startPost(droplet);
+            Droplet droplet = new Droplet(userID, currentLatLng.latitude, currentLatLng.longitude,
+                    dropMessage, timestamp);
+
+            // TODO handle response state, transition to different fragment
+            reqManager.startPost(droplet);
+        }
+        else{
+        Log.e(TAG, "JARED location was null inside onDropSubmit");
+        }
     }
 
+    /**
+     * When a droplet appears in the user's proximity, this method unpacks the droplet and populates
+     * it on the map
+     * @param droplet droplet near user to draw on map
+     */
+    @Override
+    public void onDropletFound(Droplet droplet) {
+        LatLng dropletLocation = new LatLng(droplet.getLatitude(), droplet.getLongitude());
+        mMap.addMarker(new MarkerOptions()
+                .position(dropletLocation)
+                .title(String.valueOf(droplet.getUser_id()))
+                .snippet(droplet.getMessage()));
+    }
+
+    // locationLister method
+    @Override
+    public void onLocationChanged(Location location) {
+        if (location == null){
+            Log.d(TAG, "inside onLocationChanged and location was null");
+            return;
+        }
+        mCurrentLocation = location;
+        Log.d(TAG, "location is not null! ");
+        mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
+    }
+
+    @Override
+    public void onConnected(Bundle bundle) {
+        Log.d(TAG, "Connected to GoogleApiClient");
+        mLastUpdateTime = DateFormat.getDateTimeInstance().format(new Date());
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) !=
+                PackageManager.PERMISSION_GRANTED) {
+            Log.d(TAG, "permission to fine location is missing");
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSION_ACCESS_FINE_LOCATION);
+            Log.d(TAG, "best provider name is supposedly: "+ mProviderName);
+            mCurrentLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+
+            if (mCurrentLocation != null) {
+                Log.d(TAG, "JARED currentlocation is NOT null" );
+            }
+            else {
+                Log.d(TAG, "JARED currentlocation is null inside of onConnected.");
+//                mCurrentLocation = locationManager.getLastKnownLocation(mProviderName);
+            }
+        }
+//        if (mRequestingLocationUpdates) {
+//            startLocationUpdates();
+//        }
+        else {
+            startLocationUpdates();
+        }
+    }
+
+    public void startLocationUpdates() {
+        Log.d(TAG, "inside startlocationupdates");
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) !=
+                PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSION_ACCESS_FINE_LOCATION);
+            LocationServices.FusedLocationApi.requestLocationUpdates(
+                    mGoogleApiClient, mLocationRequest, this);
+            Log.d(TAG, "starting location updates...got past permissions");
+        }
+        else {
+            LocationServices.FusedLocationApi.requestLocationUpdates(
+                    mGoogleApiClient, mLocationRequest, this);
+            Log.d(TAG, "starting location updates...got past permissions");
+        }
+    }
+
+
+    @Override
+    public void onConnectionSuspended(int i) {
+        Log.d(TAG, "connection suspended");
+        mGoogleApiClient.connect();
+    }
+
+    // googleApiClient method
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+        Log.e(TAG, "JARED googleApiClient connection failed");
+    }
+
+
+    protected void createLocationRequest() {
+        mRequestingLocationUpdates = true;
+        mLocationRequest = new LocationRequest();
+
+        // Sets the desired interval for active location updates. This interval is
+        // inexact. You may not receive updates at all if no location sources are available, or
+        // you may receive them slower than requested. You may also receive updates faster than
+        // requested if other applications are requesting location at a faster interval.
+        mLocationRequest.setInterval(UPDATE_INTERVAL_IN_MILLISECONDS);
+
+        // Sets the fastest rate for active location updates. This interval is exact, and your
+        // application will never receive updates faster than this value.
+        mLocationRequest.setFastestInterval(FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS);
+
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
+    }
 }

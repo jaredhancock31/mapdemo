@@ -41,10 +41,10 @@ public class LocManager implements com.google.android.gms.location.LocationListe
             UPDATE_INTERVAL_IN_MILLISECONDS / 2;
 
     /* Private attributes */
-    private static final String TAG = "LocManager";
-    private Location mCurrentLocation;
+    private static final String TAG = "LOCMANAGER";
+    public Location mCurrentLocation;
     private LatLng mCurrentLatLng;
-    private boolean mRequestingLocationUpdates;
+    public boolean mRequestingLocationUpdates;
     private LocationManager manager;
     private Context context;
     private LocationRequest mLocationRequest;
@@ -72,22 +72,32 @@ public class LocManager implements com.google.android.gms.location.LocationListe
     //LocationListener method
     @Override
     public void onLocationChanged(Location location) {
+        if (location == null){
+            Log.d(TAG, "inside onLocationChanged and location was null");
+            return;
+        }
         mCurrentLocation = location;
-        mCurrentLatLng = new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
+        Log.d(TAG, "location is not null! ");
         mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
     }
 
     //GoogleApiClient method
     @Override
     public void onConnected(Bundle bundle) {
-        Log.i(TAG, "Connected to GoogleApiClient");
+        Log.d(TAG, "Connected to GoogleApiClient");
         mLastUpdateTime = DateFormat.getDateTimeInstance().format(new Date());
-        if (ActivityCompat.checkSelfPermission(mGoogleApiClient.getContext(), Manifest.permission.ACCESS_FINE_LOCATION) !=
-                PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(mGoogleApiClient.getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(mGoogleApiClient.getContext(), Manifest.permission.ACCESS_FINE_LOCATION) ==
+                PackageManager.PERMISSION_GRANTED) {
+            Log.d(TAG, "permissions are fine inside of onConnected...");
+            Log.d(TAG, "best provider name is supposedly: "+ mProviderName);
             mCurrentLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+
             if (mCurrentLocation != null) {
-                 mCurrentLatLng = new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
+                Log.d(TAG, "JARED currentlocation is NOT null" );
+            }
+            else {
+                Log.d(TAG, "JARED currentlocation is null");
+                mCurrentLocation = manager.getLastKnownLocation(mProviderName);
             }
         }
         if (mRequestingLocationUpdates) {
@@ -98,14 +108,14 @@ public class LocManager implements com.google.android.gms.location.LocationListe
     //GoogleApiClient method
     @Override
     public void onConnectionSuspended(int i) {
-        Log.i(TAG, "connection suspended");
+        Log.d(TAG, "connection suspended");
         mGoogleApiClient.connect();
     }
 
     //GoogleApiClient method
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
-        Log.i(TAG, "connection failed");
+        Log.e(TAG, "JARED connection failed");
 
     }
 
@@ -114,7 +124,7 @@ public class LocManager implements com.google.android.gms.location.LocationListe
      * LocationServices API.
      */
     public synchronized void buildGoogleApiClient() {
-        Log.i(TAG, "Building GoogleApiClient");
+        Log.d(TAG, "Building GoogleApiClient");
         mGoogleApiClient = new GoogleApiClient.Builder(context)
                 .addConnectionCallbacks(this)
                 .addApi(API)
@@ -124,13 +134,13 @@ public class LocManager implements com.google.android.gms.location.LocationListe
 
 
     public void startLocationUpdates() {
-        if (ActivityCompat.checkSelfPermission(mGoogleApiClient.getContext(), Manifest.permission.ACCESS_FINE_LOCATION) !=
-                PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(mGoogleApiClient.getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) !=
-                        PackageManager.PERMISSION_GRANTED) {
+        Log.d(TAG, "inside startlocationupdates");
+        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) ==
+                PackageManager.PERMISSION_GRANTED) {
 
             LocationServices.FusedLocationApi.requestLocationUpdates(
                     mGoogleApiClient, mLocationRequest, this);
+            Log.d(TAG, "starting location updates...got past permissions");
         }
     }
 
@@ -150,13 +160,20 @@ public class LocManager implements com.google.android.gms.location.LocationListe
         mLocationRequest.setFastestInterval(FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS);
 
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
     }
 
-    public boolean ismRequestingLocationUpdates() {
+    public boolean isRequestingLocationUpdates() {
         return mRequestingLocationUpdates;
     }
 
     public Location getMyCurrentLocation() {
+        if (mCurrentLocation == null) {
+            if (ActivityCompat.checkSelfPermission(mGoogleApiClient.getContext(), Manifest.permission.ACCESS_FINE_LOCATION) !=
+                    PackageManager.PERMISSION_GRANTED) {
+                mCurrentLocation = manager.getLastKnownLocation(mProviderName);
+            }
+        }
         return mCurrentLocation;
     }
 
