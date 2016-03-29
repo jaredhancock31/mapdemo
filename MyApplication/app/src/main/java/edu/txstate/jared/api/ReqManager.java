@@ -26,6 +26,8 @@ public class ReqManager {
     }
 
 
+
+
     /**
      * Submits a new Droplet object to the server via an AsyncPost in the background
      * @param droplet droplet object to post to the server

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">MenuDemo</string>
+    <string name="app_name">GeoShareTX</string>
     <string name="google_app_id">sixth-cider-120305</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -12,4 +12,10 @@
     <string name="dropTypePromptText">Select Drop Type:</string>
     <string name="submitButtonText">Submit</string>
     <string name="title_activity_maps">Map</string>
+
+    <string name="loginString">Login</string>
+    <string name="emailText">Email</string>
+    <string name="pwdLabel">Password</string>
+    <string name="registerButtonLabel">REGISTER</string>
+    <string name="linkToLoginText">Already Registered? Login Here</string>
 </resources>

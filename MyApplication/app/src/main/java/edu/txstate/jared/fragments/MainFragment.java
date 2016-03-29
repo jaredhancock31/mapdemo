@@ -10,12 +10,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 
 import edu.txstate.jared.menudemo.MapsActivity;
 import edu.txstate.jared.menudemo.R;
 
 
 public class MainFragment extends Fragment {
+
+    public static String TAG = "MAINFRAG";
+
     @Nullable
 
 
@@ -24,7 +28,7 @@ public class MainFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_main, container, false);
 //        return super.onCreateView(inflater, container, savedInstanceState);
-        Button gotoMapButton = (Button) view.findViewById(R.id.gotoMapButton);
+        ImageButton gotoMapButton = (ImageButton) view.findViewById(R.id.earthButton);
         gotoMapButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

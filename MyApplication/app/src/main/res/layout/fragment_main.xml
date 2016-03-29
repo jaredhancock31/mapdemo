@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent">
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:background="#689dd5">
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="New Button"
-        android:id="@+id/gotoMapButton"
-        android:layout_gravity="center"/>
+    <ImageButton
+        android:layout_width="111dp"
+        android:layout_height="111dp"
+        android:id="@+id/earthButton"
+        android:layout_gravity="right|bottom"
+        android:src="@drawable/earth_icon"
+        android:background="#689dd5"
+        android:clickable="true"
+        android:scaleType="fitXY" />
 </FrameLayout>

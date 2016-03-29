@@ -24,6 +24,12 @@ public class AsyncPost extends AsyncTask<String, Void, Boolean> {
 
     public AsyncPost() {}
 
+
+    /**
+     * Main logic for the HTTP request.
+     * @param params key value pairs in form of a parameter string
+     * @return
+     */
     @Override
     protected Boolean doInBackground(String... params) {
         try {

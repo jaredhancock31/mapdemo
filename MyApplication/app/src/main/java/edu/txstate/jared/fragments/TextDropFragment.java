@@ -26,15 +26,9 @@ import edu.txstate.jared.menudemo.R;
  * create an instance of this fragment.
  */
 public class TextDropFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
     private static EditText textField;
     private static Button submitButton;
-
     private OnFragmentInteractionListener mListener;
 
     public TextDropFragment() {
@@ -53,9 +47,9 @@ public class TextDropFragment extends Fragment {
     // TODO: Rename and change types and number of parameters
     public static TextDropFragment newInstance(String type) {
         TextDropFragment fragment = new TextDropFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, type);
-        fragment.setArguments(args);
+//        Bundle args = new Bundle();
+//        args.putString(ARG_PARAM1, type);
+//        fragment.setArguments(args);
         return fragment;
     }
 

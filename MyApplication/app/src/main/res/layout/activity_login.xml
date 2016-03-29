@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="edu.txstate.jared.menudemo.LoginActivity"
+    android:background="#cd3c34"
+    android:weightSum="1">
+
+
+    <ImageView
+        android:layout_width="215dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/logoView1"
+        android:alpha=".75"
+        android:layout_gravity="center"
+        android:layout_marginBottom="40dp"
+        android:layout_weight="0.24" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="@string/emailText"
+        android:id="@+id/emailLabel"
+        android:textColor="#f4f4f4"
+        android:layout_margin="10dp" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textEmailAddress"
+        android:ems="10"
+        android:id="@+id/emailField" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="@string/pwdLabel"
+        android:id="@+id/pwdLabel1"
+        android:layout_margin="10dp"
+        android:textColor="#ffffff" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textPassword"
+        android:ems="10"
+        android:id="@+id/pwdField1"
+        android:enabled="true"
+        android:editable="true" />
+
+    <Button
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/loginButton"
+        android:layout_gravity="center_horizontal"
+        android:text="@string/loginString"
+        android:layout_margin="10dp"
+        android:background="#d42727"
+        android:enabled="false" />
+
+</LinearLayout>

@@ -129,147 +129,9 @@ public class MapsActivity extends FragmentActivity
         mMap = googleMap;
         mMap.setOnMyLocationButtonClickListener(this);
         enableMyLocation();
-        onMyLocationButtonClick();
-
     }
 
 
-    /**
-     * Listener for the myLocation button. Returning false will center the camera on the user's
-     * current location.
-     * @return false if you want the default behavior, true if you want to explicitly define it
-     */
-    @SuppressWarnings("ResourceType")
-    @Override
-    public boolean onMyLocationButtonClick() {
-        Log.i(TAG, "MyLocation button clicked.");
-        //TODO tell reqManager to search for droplets near current location
-        mRequestingLocationUpdates = true;
-//        reqManager.lookForDropletsNearby(locManager.getMyCurrentLocation());
-        return false;
-    }
-
-
-    protected void onStart() {
-        mGoogleApiClient.connect();
-        super.onStart();
-    }
-
-    protected void onStop() {
-//        locManager.mGoogleApiClient.disconnect();
-        super.onStop();
-    }
-
-
-    /* LocationListener method TODO stoplocationrequests in LocManager? */
-    @Override
-    public void onPause() {
-        super.onPause();
-//        locManager.stopLocationUpdates();
-    }
-
-
-    /* LocationListener method */
-    @Override
-    public void onResume() {
-        super.onResume();
-        if(mGoogleApiClient.isConnected() && !mRequestingLocationUpdates) {
-            startLocationUpdates();
-        }
-    }
-
-
-    /**
-     * Builds a GoogleApiClient. Uses the {@code #addApi} method to request the
-     * LocationServices API.
-     */
-    public synchronized void buildGoogleApiClient() {
-        Log.d(TAG, "Building GoogleApiClient");
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this)
-                .addApi(API)
-                .addOnConnectionFailedListener(this)
-                .build();
-    }
-
-    /**
-     * Enables the My Location layer if the fine location permission has been granted.
-     */
-    private void enableMyLocation() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // Permission to ACCESS_FINE_LOCATION is missing.
-            Log.d(TAG, "permission to fine location is missing");
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSION_ACCESS_FINE_LOCATION);
-        }
-//        else if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-//            // Permission to ACCESS_COARSE_LOCATION is missing
-//            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, MY_PERMISSION_ACCESS_COARSE_LOCATION);
-//        }
-        else if (mMap != null) {
-            Log.d(TAG, "permission for fine location has been granted. setting the map to have location enabled");
-            // Access to the location has been granted to the app.
-            mMap.setMyLocationEnabled(true);
-        }
-        else {
-            Log.e(TAG, "hit the else case in enableMyLocation");
-        }
-    }
-
-
-    /**
-     * TODO fix grantResults[0] lines: refer to https://github.com/googlemaps/android-samples/blob/master/ApiDemos/app/src/main/java/com/example/mapdemo/PermissionUtils.java line 58
-     * Permission request handler
-     */
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-
-        switch (requestCode) {
-            case MY_PERMISSION_ACCESS_FINE_LOCATION:
-                if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    enableMyLocation();
-                }
-                return;
-            default:
-                Log.e(TAG, "location permission denied");
-                return;
-
-        }
-    }
-
-    private void updateValuesFromBundle(Bundle savedInstanceState) {
-        Log.i(TAG, "Updating values from bundle");
-        if (savedInstanceState != null) {
-            // Update the value of mRequestingLocationUpdates from the Bundle, and make sure that
-            // the Start Updates and Stop Updates buttons are correctly enabled or disabled.
-            if (savedInstanceState.keySet().contains(REQUESTING_LOCATION_UPDATES_KEY)) {
-                mRequestingLocationUpdates = savedInstanceState.getBoolean(
-                        REQUESTING_LOCATION_UPDATES_KEY);
-
-            }
-
-            // Update the value of mCurrentLocation from the Bundle and update the UI to show the
-            // correct latitude and longitude.
-            if (savedInstanceState.keySet().contains(LOCATION_KEY)) {
-                // Since LOCATION_KEY was found in the Bundle, we can be sure that mCurrentLocation
-                // is not null.
-                mCurrentLocation = savedInstanceState.getParcelable(LOCATION_KEY);
-            }
-
-            // Update the value of mLastUpdateTime from the Bundle and update the UI.
-            if (savedInstanceState.keySet().contains(LAST_UPDATE_TIME_KEY)) {
-                mLastUpdateTime = savedInstanceState.getString(LAST_UPDATE_TIME_KEY);
-            }
-        }
-
-    }
-
-
-    public void onSaveInstanceState(Bundle savedInstanceState) {
-        savedInstanceState.putBoolean(REQUESTING_LOCATION_UPDATES_KEY, mRequestingLocationUpdates);
-        savedInstanceState.putParcelable(LOCATION_KEY, mCurrentLocation);
-        savedInstanceState.putString(LAST_UPDATE_TIME_KEY, mLastUpdateTime);
-        super.onSaveInstanceState(savedInstanceState);
-    }
 
     @Override
     public void onDropTypeSubmit(String type) {
@@ -299,6 +161,9 @@ public class MapsActivity extends FragmentActivity
 
             // TODO handle response state, transition to different fragment
             reqManager.startPost(droplet);
+
+            FragmentManager fm = getSupportFragmentManager();
+            fm.beginTransaction().replace(fm.findFragmentById(R.id.fragment_container).getId(), fm.findFragmentById(R.id.map));
         }
         else{
         Log.e(TAG, "JARED location was null inside onDropSubmit");
@@ -391,18 +256,149 @@ public class MapsActivity extends FragmentActivity
     protected void createLocationRequest() {
         mRequestingLocationUpdates = true;
         mLocationRequest = new LocationRequest();
-
         // Sets the desired interval for active location updates. This interval is
         // inexact. You may not receive updates at all if no location sources are available, or
         // you may receive them slower than requested. You may also receive updates faster than
         // requested if other applications are requesting location at a faster interval.
         mLocationRequest.setInterval(UPDATE_INTERVAL_IN_MILLISECONDS);
-
         // Sets the fastest rate for active location updates. This interval is exact, and your
         // application will never receive updates faster than this value.
         mLocationRequest.setFastestInterval(FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS);
-
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+    }
+
+
+    /**
+     * Listener for the myLocation button. Returning false will center the camera on the user's
+     * current location.
+     * @return false if you want the default behavior, true if you want to explicitly define it
+     */
+    @SuppressWarnings("ResourceType")
+    @Override
+    public boolean onMyLocationButtonClick() {
+        Log.i(TAG, "MyLocation button clicked.");
+        //TODO tell reqManager to search for droplets near current location
+        mRequestingLocationUpdates = true;
+//        reqManager.lookForDropletsNearby(locManager.getMyCurrentLocation());
+        return false;
+    }
+
+
+    protected void onStart() {
+        mGoogleApiClient.connect();
+        super.onStart();
+    }
+
+    protected void onStop() {
+//        locManager.mGoogleApiClient.disconnect();
+        super.onStop();
+    }
+
+
+    /* LocationListener method TODO stoplocationrequests in LocManager? */
+    @Override
+    public void onPause() {
+        super.onPause();
+//        locManager.stopLocationUpdates();
+    }
+
+
+    /* LocationListener method */
+    @Override
+    public void onResume() {
+        super.onResume();
+        if(mGoogleApiClient.isConnected() && !mRequestingLocationUpdates) {
+            startLocationUpdates();
+        }
+    }
+
+
+    /**
+     * Builds a GoogleApiClient. Uses the {@code #addApi} method to request the
+     * LocationServices API.
+     */
+    public synchronized void buildGoogleApiClient() {
+        Log.d(TAG, "Building GoogleApiClient");
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addApi(API)
+                .addOnConnectionFailedListener(this)
+                .build();
+    }
+
+    /**
+     * Enables the My Location layer if the fine location permission has been granted.
+     */
+    private void enableMyLocation() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // Permission to ACCESS_FINE_LOCATION is missing.
+            Log.d(TAG, "permission to fine location is missing");
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSION_ACCESS_FINE_LOCATION);
+        }
+        else if (mMap != null) {
+            Log.d(TAG, "permission for fine location has been granted. setting the map to have location enabled");
+            // Access to the location has been granted to the app.
+            mMap.setMyLocationEnabled(true);
+        }
+        else {
+            Log.e(TAG, "hit the else case in enableMyLocation");
+        }
+    }
+
+
+    /**
+     * TODO fix grantResults[0] lines: refer to https://github.com/googlemaps/android-samples/blob/master/ApiDemos/app/src/main/java/com/example/mapdemo/PermissionUtils.java line 58
+     * Permission request handler
+     */
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+
+        switch (requestCode) {
+            case MY_PERMISSION_ACCESS_FINE_LOCATION:
+                if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    enableMyLocation();
+                }
+                return;
+            default:
+                Log.e(TAG, "location permission denied");
+                return;
+
+        }
+    }
+
+    private void updateValuesFromBundle(Bundle savedInstanceState) {
+        Log.i(TAG, "Updating values from bundle");
+        if (savedInstanceState != null) {
+            // Update the value of mRequestingLocationUpdates from the Bundle, and make sure that
+            // the Start Updates and Stop Updates buttons are correctly enabled or disabled.
+            if (savedInstanceState.keySet().contains(REQUESTING_LOCATION_UPDATES_KEY)) {
+                mRequestingLocationUpdates = savedInstanceState.getBoolean(
+                        REQUESTING_LOCATION_UPDATES_KEY);
+
+            }
+
+            // Update the value of mCurrentLocation from the Bundle and update the UI to show the
+            // correct latitude and longitude.
+            if (savedInstanceState.keySet().contains(LOCATION_KEY)) {
+                // Since LOCATION_KEY was found in the Bundle, we can be sure that mCurrentLocation
+                // is not null.
+                mCurrentLocation = savedInstanceState.getParcelable(LOCATION_KEY);
+            }
+
+            // Update the value of mLastUpdateTime from the Bundle and update the UI.
+            if (savedInstanceState.keySet().contains(LAST_UPDATE_TIME_KEY)) {
+                mLastUpdateTime = savedInstanceState.getString(LAST_UPDATE_TIME_KEY);
+            }
+        }
 
     }
+
+
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        savedInstanceState.putBoolean(REQUESTING_LOCATION_UPDATES_KEY, mRequestingLocationUpdates);
+        savedInstanceState.putParcelable(LOCATION_KEY, mCurrentLocation);
+        savedInstanceState.putString(LAST_UPDATE_TIME_KEY, mLastUpdateTime);
+        super.onSaveInstanceState(savedInstanceState);
+    }
+
 }
