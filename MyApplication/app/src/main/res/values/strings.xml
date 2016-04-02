@@ -18,4 +18,6 @@
     <string name="pwdLabel">Password</string>
     <string name="registerButtonLabel">REGISTER</string>
     <string name="linkToLoginText">Already Registered? Login Here</string>
+    <string name="profileButtonText">Profile</string>
+    <string name="mapButtonText">Map</string>
 </resources>

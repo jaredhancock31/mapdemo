@@ -16,10 +16,13 @@
 
     <Button
         android:id="@+id/newDropButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|center_horizontal"
+        android:layout_width="365dp"
+        android:layout_height="43dp"
+        android:layout_gravity="right|bottom"
         android:text="@string/newDropButtonText"
-        />
+        android:background="@drawable/buttonshape"
+        android:textColor="#ffffff"
+        android:layout_margin="10dp"
+        android:enabled="true" />
 
 </FrameLayout>

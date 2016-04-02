@@ -1,5 +1,6 @@
 package edu.txstate.jared.menudemo;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -35,6 +36,14 @@ public class RegisterActivity extends AppCompatActivity {
                 attemptRegister(v);
             }
         });
+        linkToLogin = (TextView) findViewById(R.id.linkToLogin);
+        linkToLogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+                startActivity(intent);
+            }
+        });
 
     }
 
@@ -57,7 +66,6 @@ public class RegisterActivity extends AppCompatActivity {
         } else {
             Log.d(TAG, "email has been validated");
         }
-
         if (pwd.isEmpty() || pwd.length() < 5 || pwd.length() > 20) {
             Log.e(TAG, "password is invalid");
             valid = false;
@@ -68,6 +76,7 @@ public class RegisterActivity extends AppCompatActivity {
     private void onRegisterSuccess() {
         Log.d(TAG, "registration success");
         registerButton.setEnabled(true);
+        finish();   // activity is finished and can be closed
     }
 
     private void onRegisterFailed() {

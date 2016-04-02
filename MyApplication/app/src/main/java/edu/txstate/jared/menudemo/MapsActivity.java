@@ -1,7 +1,9 @@
 package edu.txstate.jared.menudemo;
 
 import android.Manifest;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
@@ -30,8 +32,8 @@ import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.util.Date;
 
-import edu.txstate.jared.api.ReqManager;
-import edu.txstate.jared.fragments.DropTypeFragment;
+import edu.txstate.jared.service.DropletQueryService;
+import edu.txstate.jared.service.ReqManager;
 import edu.txstate.jared.fragments.TextDropFragment;
 
 import static com.google.android.gms.location.LocationServices.API;
@@ -51,7 +53,6 @@ public class MapsActivity extends FragmentActivity
         com.google.android.gms.location.LocationListener,
         ActivityCompat.OnRequestPermissionsResultCallback,
         GoogleMap.OnMyLocationButtonClickListener,
-        DropTypeFragment.OnFragmentInteractionListener,
         TextDropFragment.OnFragmentInteractionListener,
         DropletDiscoveryListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
@@ -84,6 +85,8 @@ public class MapsActivity extends FragmentActivity
     private LocationListener mLocationListener;
     private Location mCurrentLocation;
     private boolean mRequestingLocationUpdates;
+    private PendingIntent mRequestLocationUpdatesPendingIntent;
+
 
 
     @Override
@@ -110,10 +113,8 @@ public class MapsActivity extends FragmentActivity
                         replace(R.id.maps_frag_container, new TextDropFragment()).commit();
             }
         });
-
         // update vals using data stored in the Bundle
         updateValuesFromBundle(savedInstanceState);
-
     }
 
     /**
@@ -132,15 +133,6 @@ public class MapsActivity extends FragmentActivity
     }
 
 
-
-    @Override
-    public void onDropTypeSubmit(String type) {
-        FragmentManager fm = getSupportFragmentManager();
-        TextDropFragment textDrop = TextDropFragment.newInstance(type);
-        fm.beginTransaction().replace(fm.findFragmentById(R.id.fragment_container).getId(), textDrop).commit();
-    }
-
-
     /**
      * When a new droplet is submitted, this method tells the ReqManager to start up a new asyncPost
      * and save the droplet to the server.
@@ -151,22 +143,7 @@ public class MapsActivity extends FragmentActivity
     public void onDropSubmit(String dropMessage, Timestamp timestamp) {
 //        Location loc = locationManager.getLastKnownLocation(mProviderName);
         if (mCurrentLocation != null) {
-            LatLng currentLatLng = new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
-            int userID = 1234; // TODO change this to a real id
-            Log.d(TAG, "JARED onDropSubmit: latitude =" + currentLatLng.latitude);
-
-
-            Droplet droplet = new Droplet(userID, currentLatLng.latitude, currentLatLng.longitude,
-                    dropMessage, timestamp);
-
-            // TODO handle response state, transition to different fragment
-            reqManager.startPost(droplet);
-
-            FragmentManager fm = getSupportFragmentManager();
-            fm.beginTransaction().replace(fm.findFragmentById(R.id.fragment_container).getId(), fm.findFragmentById(R.id.map));
-        }
-        else{
-        Log.e(TAG, "JARED location was null inside onDropSubmit");
+            // this is going away
         }
     }
 
@@ -184,6 +161,7 @@ public class MapsActivity extends FragmentActivity
                 .snippet(droplet.getMessage()));
     }
 
+
     // locationLister method
     @Override
     public void onLocationChanged(Location location) {
@@ -192,9 +170,10 @@ public class MapsActivity extends FragmentActivity
             return;
         }
         mCurrentLocation = location;
-        Log.d(TAG, "location is not null! ");
+//        Log.d(TAG, "location is not null! ");
         mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
     }
+
 
     @Override
     public void onConnected(Bundle bundle) {
@@ -202,6 +181,7 @@ public class MapsActivity extends FragmentActivity
         mLastUpdateTime = DateFormat.getDateTimeInstance().format(new Date());
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) !=
                 PackageManager.PERMISSION_GRANTED) {
+
             Log.d(TAG, "permission to fine location is missing");
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSION_ACCESS_FINE_LOCATION);
             Log.d(TAG, "best provider name is supposedly: "+ mProviderName);
@@ -212,31 +192,46 @@ public class MapsActivity extends FragmentActivity
             }
             else {
                 Log.d(TAG, "JARED currentlocation is null inside of onConnected.");
-//                mCurrentLocation = locationManager.getLastKnownLocation(mProviderName);
             }
         }
-//        if (mRequestingLocationUpdates) {
-//            startLocationUpdates();
-//        }
         else {
             startLocationUpdates();
         }
     }
+
 
     public void startLocationUpdates() {
         Log.d(TAG, "inside startlocationupdates");
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) !=
                 PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSION_ACCESS_FINE_LOCATION);
-            LocationServices.FusedLocationApi.requestLocationUpdates(
-                    mGoogleApiClient, mLocationRequest, this);
-            Log.d(TAG, "starting location updates...got past permissions");
+            startLocationUpdates();
         }
         else {
+            // get updates for the map first
             LocationServices.FusedLocationApi.requestLocationUpdates(
                     mGoogleApiClient, mLocationRequest, this);
-            Log.d(TAG, "starting location updates...got past permissions");
+
+            // create intent to handle results
+            Intent mRequestLocationUpdatesIntent = new Intent(this, DropletQueryService.class);
+
+            // create a PendingIntent
+            mRequestLocationUpdatesPendingIntent = PendingIntent.getService(getApplicationContext(), 0,
+                    mRequestLocationUpdatesIntent,
+                    PendingIntent.FLAG_UPDATE_CURRENT);
+
+            // send location updates to our background service
+            LocationServices.FusedLocationApi.requestLocationUpdates(
+                    mGoogleApiClient, mLocationRequest, mRequestLocationUpdatesPendingIntent);
+
+
+            Log.d(TAG, "starting location updates");
         }
+    }
+
+
+    public void stopLocationUpdates(){
+        LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, mRequestLocationUpdatesPendingIntent);
     }
 
 
@@ -244,6 +239,8 @@ public class MapsActivity extends FragmentActivity
     public void onConnectionSuspended(int i) {
         Log.d(TAG, "connection suspended");
         mGoogleApiClient.connect();
+
+
     }
 
     // googleApiClient method
@@ -299,7 +296,7 @@ public class MapsActivity extends FragmentActivity
     @Override
     public void onPause() {
         super.onPause();
-//        locManager.stopLocationUpdates();
+        stopLocationUpdates();
     }
 
 
@@ -311,6 +308,7 @@ public class MapsActivity extends FragmentActivity
             startLocationUpdates();
         }
     }
+
 
 
     /**

@@ -64,6 +64,17 @@
         android:text="@string/loginString"
         android:layout_margin="10dp"
         android:background="#d42727"
-        android:enabled="false" />
+        android:enabled="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="Not a user yet? Register here"
+        android:id="@+id/linkToRegister"
+        android:layout_gravity="center_horizontal"
+        android:layout_weight="0.05"
+        android:enabled="true"
+        android:layout_marginTop="15dp" />
 
 </LinearLayout>
