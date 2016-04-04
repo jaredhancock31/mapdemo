@@ -57,13 +57,13 @@
         </activity>
 
         <service
-            android:name="edu.txstate.jared.service.RequestService"
+            android:name="edu.txstate.jared.service.PostService"
             android:exported="false" />
         <service
             android:name="edu.txstate.jared.service.DropletQueryService"
             android:exported="false" />
 
-        <activity android:name=".CreateDroplet"></activity>
+        <activity android:name=".CreateDropletActivity"></activity>
     </application>
 
 </manifest>

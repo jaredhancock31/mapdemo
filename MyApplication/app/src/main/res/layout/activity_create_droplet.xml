@@ -7,6 +7,41 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="edu.txstate.jared.menudemo.CreateDroplet">
+    tools:context=".CreateDropletActivity"
+    android:background="#eb1b2f">
+
+
+    <EditText
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/usernameForm"
+        android:hint="@string/usernameText"
+        android:textColor="#ffffff"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true" />
+
+    <EditText
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textMultiLine"
+        android:ems="10"
+        android:id="@+id/messageForm"
+        android:editable="true"
+        android:hint="Whatchu got ta say"
+        android:textColor="#ffffff"
+        android:layout_below="@+id/usernameForm"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="68dp" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/submitButtonText"
+        android:id="@+id/submitButton"
+        android:background="@drawable/buttonshape"
+        android:textSize="20sp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true" />
+
 
 </RelativeLayout>

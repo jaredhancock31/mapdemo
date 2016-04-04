@@ -14,7 +14,7 @@ import android.util.Log;
 
 public class DropletQueryService extends IntentService {
 
-    private static final String TAG = "LOCATIONSERVICE";
+    private static final String TAG = "DROPLET_QUERY_SERVICE";
 
 
 

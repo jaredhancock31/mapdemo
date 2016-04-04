@@ -11,7 +11,6 @@ import android.location.LocationManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
@@ -25,16 +24,11 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 
-import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.util.Date;
 
 import edu.txstate.jared.service.DropletQueryService;
-import edu.txstate.jared.service.ReqManager;
-import edu.txstate.jared.fragments.TextDropFragment;
 
 import static com.google.android.gms.location.LocationServices.API;
 
@@ -53,8 +47,8 @@ public class MapsActivity extends FragmentActivity
         com.google.android.gms.location.LocationListener,
         ActivityCompat.OnRequestPermissionsResultCallback,
         GoogleMap.OnMyLocationButtonClickListener,
-        TextDropFragment.OnFragmentInteractionListener,
-        DropletDiscoveryListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+        GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener {
 
     /**
      * The desired interval for location updates. Inexact. Updates may be more or less frequent.
@@ -75,7 +69,6 @@ public class MapsActivity extends FragmentActivity
     private static final String LAST_UPDATE_TIME_KEY = "last-update-time-key";
 //    private LocManager locManager;
     private LocationManager locationManager;
-    private ReqManager reqManager;
     private GoogleMap mMap;
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
@@ -87,6 +80,9 @@ public class MapsActivity extends FragmentActivity
     private boolean mRequestingLocationUpdates;
     private PendingIntent mRequestLocationUpdatesPendingIntent;
 
+    public static final String LATITUDE = "latitude";
+    public static final String LONGITUDE = "longitude";
+
 
 
     @Override
@@ -95,7 +91,6 @@ public class MapsActivity extends FragmentActivity
         setContentView(R.layout.activity_maps);
 //        locManager = new LocManager(this, (LocationManager) getSystemService(Context.LOCATION_SERVICE));
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        reqManager = new ReqManager(this);
         buildGoogleApiClient();
         createLocationRequest();
 
@@ -108,9 +103,10 @@ public class MapsActivity extends FragmentActivity
         newDropButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                FragmentManager fm = getSupportFragmentManager();
-                fm.beginTransaction().
-                        replace(R.id.maps_frag_container, new TextDropFragment()).commit();
+                Intent intent = new Intent(getApplicationContext(), CreateDropletActivity.class);
+                intent.putExtra(LATITUDE, mCurrentLocation.getLatitude());
+                intent.putExtra(LONGITUDE, mCurrentLocation.getLongitude());
+                startActivity(intent);
             }
         });
         // update vals using data stored in the Bundle
@@ -130,35 +126,6 @@ public class MapsActivity extends FragmentActivity
         mMap = googleMap;
         mMap.setOnMyLocationButtonClickListener(this);
         enableMyLocation();
-    }
-
-
-    /**
-     * When a new droplet is submitted, this method tells the ReqManager to start up a new asyncPost
-     * and save the droplet to the server.
-     * @param dropMessage message to leave at the droplet location
-     * @param timestamp timestamp of the droplet submission
-     */
-    @Override
-    public void onDropSubmit(String dropMessage, Timestamp timestamp) {
-//        Location loc = locationManager.getLastKnownLocation(mProviderName);
-        if (mCurrentLocation != null) {
-            // this is going away
-        }
-    }
-
-    /**
-     * When a droplet appears in the user's proximity, this method unpacks the droplet and populates
-     * it on the map
-     * @param droplet droplet near user to draw on map
-     */
-    @Override
-    public void onDropletFound(Droplet droplet) {
-        LatLng dropletLocation = new LatLng(droplet.getLatitude(), droplet.getLongitude());
-        mMap.addMarker(new MarkerOptions()
-                .position(dropletLocation)
-                .title(String.valueOf(droplet.getUser_id()))
-                .snippet(droplet.getMessage()));
     }
 
 
@@ -200,6 +167,9 @@ public class MapsActivity extends FragmentActivity
     }
 
 
+    /**
+     * Starts location update service as well as our own DropletQueryService
+     */
     public void startLocationUpdates() {
         Log.d(TAG, "inside startlocationupdates");
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) !=
@@ -223,7 +193,6 @@ public class MapsActivity extends FragmentActivity
             // send location updates to our background service
             LocationServices.FusedLocationApi.requestLocationUpdates(
                     mGoogleApiClient, mLocationRequest, mRequestLocationUpdatesPendingIntent);
-
 
             Log.d(TAG, "starting location updates");
         }

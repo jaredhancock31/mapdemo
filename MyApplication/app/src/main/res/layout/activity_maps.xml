@@ -18,11 +18,11 @@
         android:id="@+id/newDropButton"
         android:layout_width="365dp"
         android:layout_height="43dp"
-        android:layout_gravity="right|bottom"
         android:text="@string/newDropButtonText"
         android:background="@drawable/buttonshape"
         android:textColor="#ffffff"
         android:layout_margin="10dp"
-        android:enabled="true" />
+        android:enabled="true"
+        android:layout_gravity="center_horizontal|bottom" />
 
 </FrameLayout>

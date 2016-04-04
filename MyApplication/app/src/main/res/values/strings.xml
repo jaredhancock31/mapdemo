@@ -20,4 +20,7 @@
     <string name="linkToLoginText">Already Registered? Login Here</string>
     <string name="profileButtonText">Profile</string>
     <string name="mapButtonText">Map</string>
+    <string name="usernameText">Username</string>
+    <string name="latitudeText">Latitude</string>
+    <string name="longText">Longitude</string>
 </resources>

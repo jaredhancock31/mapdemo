@@ -16,11 +16,8 @@ import android.widget.ImageButton;
 
 import java.sql.Timestamp;
 
-import edu.txstate.jared.fragments.TextDropFragment;
 
-public class MainActivity extends AppCompatActivity
-        implements
-        TextDropFragment.OnFragmentInteractionListener {
+public class MainActivity extends AppCompatActivity {
 
     public Button gotoMapButton;
 
@@ -69,10 +66,4 @@ public class MainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-
-    @Override
-    public void onDropSubmit(String dropMessage, Timestamp timestamp) {
-        // TODO create a drop to send to server
-
-    }
 }

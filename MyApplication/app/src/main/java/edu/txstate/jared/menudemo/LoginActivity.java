@@ -105,6 +105,10 @@ public class LoginActivity extends AppCompatActivity {
 //                        prog.dismiss();
 //                    }
 //                }, 3000);
+
+        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+        startActivity(intent);
+
     }
 
 
