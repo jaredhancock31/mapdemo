@@ -81,8 +81,8 @@ public class LoginActivity extends AppCompatActivity {
         Log.d(TAG, "logging in");
 
         // Send POST request to server
-        AsyncAuth auth = new AsyncAuth();
-        auth.execute();
+//        AsyncAuth auth = new AsyncAuth();
+//        auth.execute();
 
 //        if (!validate()) {
 //            onLoginFail();

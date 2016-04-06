@@ -54,7 +54,12 @@ public class CreateDropletActivity extends AppCompatActivity {
         String paramString = droplet.getParamString();
 
         postServiceIntent = new Intent(getApplicationContext(), PostService.class);
+        postServiceIntent.putExtra(PostService.METHOD_EXTRA, PostService.METHOD_POST);
         postServiceIntent.putExtra(PostService.PARAMS_EXTRA, paramString);
+        startService(postServiceIntent);
+
+        Intent mainIntent = new Intent(getApplicationContext(), MainActivity.class);
+        startActivity(mainIntent);
 
 
     }
