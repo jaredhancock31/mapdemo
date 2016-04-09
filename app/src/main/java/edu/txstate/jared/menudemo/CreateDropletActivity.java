@@ -27,8 +27,8 @@ public class CreateDropletActivity extends AppCompatActivity {
         setContentView(R.layout.activity_create_droplet);
 
         Intent intent = getIntent();
-        latitude = intent.getDoubleExtra(MapsActivity.LATITUDE, 0);
-        longitude = intent.getDoubleExtra(MapsActivity.LONGITUDE, 0);
+        latitude = intent.getDoubleExtra(Droplet.LATITUDE, 0);
+        longitude = intent.getDoubleExtra(Droplet.LONGITUDE, 0);
 
         usernameField = (EditText) findViewById(R.id.usernameForm);
         messageField = (EditText) findViewById(R.id.messageForm);
@@ -51,13 +51,17 @@ public class CreateDropletActivity extends AppCompatActivity {
         String username = usernameField.getText().toString();
         String message = messageField.getText().toString();
         Droplet droplet = new Droplet(username, latitude, longitude, message);
-        String paramString = droplet.getParamString();
 
         postServiceIntent = new Intent(getApplicationContext(), PostService.class);
         postServiceIntent.putExtra(PostService.METHOD_EXTRA, PostService.METHOD_POST);
-        postServiceIntent.putExtra(PostService.PARAMS_EXTRA, paramString);
-        startService(postServiceIntent);
+        postServiceIntent.putExtra(PostService.LATITUDE_EXTRA, String.valueOf(latitude));
+        postServiceIntent.putExtra(PostService.LONGITUDE_EXTRA, String.valueOf(longitude));
+        postServiceIntent.putExtra(PostService.DATA_EXTRA, message);
+        postServiceIntent.putExtra(PostService.JSON_EXTRA, String.valueOf(droplet.toJSONObject()));
 
+        startService(postServiceIntent);        // start up the POST request service
+
+        // TODO transition based on server response
         Intent mainIntent = new Intent(getApplicationContext(), MainActivity.class);
         startActivity(mainIntent);
 

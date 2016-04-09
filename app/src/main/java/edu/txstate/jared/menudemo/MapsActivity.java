@@ -2,12 +2,15 @@ package edu.txstate.jared.menudemo;
 
 import android.Manifest;
 import android.app.PendingIntent;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.IBinder;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
@@ -15,8 +18,6 @@ import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-
-
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationRequest;
@@ -24,12 +25,10 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.Date;
-
 import edu.txstate.jared.service.DropletQueryService;
-
 import static com.google.android.gms.location.LocationServices.API;
 
 /**
@@ -37,8 +36,6 @@ import static com.google.android.gms.location.LocationServices.API;
  *
  * By extending the FragmentActivity, we don't use the traditional fragment loader used in this
  * example: https://developers.google.com/maps/documentation/android-api/map.
- *
- *
  */
 
 public class MapsActivity extends FragmentActivity
@@ -50,39 +47,43 @@ public class MapsActivity extends FragmentActivity
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener {
 
-    /**
-     * The desired interval for location updates. Inexact. Updates may be more or less frequent.
-     */
-    public static final long UPDATE_INTERVAL_IN_MILLISECONDS = 10000;
-    /**
-     * The fastest rate for active location updates. Exact. Updates will never be more frequent
-     * than this value.
-     */
+    private static final String TAG = "MAPSLOG";
+
+    /* The desired interval for location updates. Inexact. Updates may be more or less frequent. */
+    public static final long UPDATE_INTERVAL_IN_MILLISECONDS = 15000;   // 15 secs
+
+    /* Updates will never be more frequent than this value. */
     public static final long FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS =
             UPDATE_INTERVAL_IN_MILLISECONDS / 2;
-
-    private static final String TAG = "MAPSLOG";
+    
     private static final int MY_PERMISSION_ACCESS_COARSE_LOCATION = 11;
     private static final int MY_PERMISSION_ACCESS_FINE_LOCATION = 12;
     private static final String REQUESTING_LOCATION_UPDATES_KEY = "requesting-location-updates-key";
     private static final String LOCATION_KEY = "location-key";
     private static final String LAST_UPDATE_TIME_KEY = "last-update-time-key";
 //    private LocManager locManager;
-    private LocationManager locationManager;
     private GoogleMap mMap;
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
     private String mLastUpdateTime;
     private String mProviderName;
-    private LocationManager mLocationManager;
+    private LocationManager locationManager;
     private LocationListener mLocationListener;
     private Location mCurrentLocation;
     private boolean mRequestingLocationUpdates;
     private PendingIntent mRequestLocationUpdatesPendingIntent;
 
-    public static final String LATITUDE = "latitude";
-    public static final String LONGITUDE = "longitude";
+    private ServiceConnection mConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
 
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+
+        }
+    };
 
 
     @Override
@@ -104,8 +105,8 @@ public class MapsActivity extends FragmentActivity
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(), CreateDropletActivity.class);
-                intent.putExtra(LATITUDE, mCurrentLocation.getLatitude());
-                intent.putExtra(LONGITUDE, mCurrentLocation.getLongitude());
+                intent.putExtra(Droplet.LATITUDE, mCurrentLocation.getLatitude());
+                intent.putExtra(Droplet.LONGITUDE, mCurrentLocation.getLongitude());
                 startActivity(intent);
             }
         });
@@ -129,6 +130,11 @@ public class MapsActivity extends FragmentActivity
     }
 
 
+    public void drawDroplets(ArrayList<Droplet> droplets) {
+        // TODO implement me
+    }
+
+
     // locationLister method
     @Override
     public void onLocationChanged(Location location) {
@@ -137,7 +143,6 @@ public class MapsActivity extends FragmentActivity
             return;
         }
         mCurrentLocation = location;
-//        Log.d(TAG, "location is not null! ");
         mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
     }
 
@@ -208,8 +213,6 @@ public class MapsActivity extends FragmentActivity
     public void onConnectionSuspended(int i) {
         Log.d(TAG, "connection suspended");
         mGoogleApiClient.connect();
-
-
     }
 
     // googleApiClient method
@@ -243,9 +246,7 @@ public class MapsActivity extends FragmentActivity
     @Override
     public boolean onMyLocationButtonClick() {
         Log.i(TAG, "MyLocation button clicked.");
-        //TODO tell reqManager to search for droplets near current location
         mRequestingLocationUpdates = true;
-//        reqManager.lookForDropletsNearby(locManager.getMyCurrentLocation());
         return false;
     }
 
@@ -256,7 +257,7 @@ public class MapsActivity extends FragmentActivity
     }
 
     protected void onStop() {
-//        locManager.mGoogleApiClient.disconnect();
+        mGoogleApiClient.disconnect();
         super.onStop();
     }
 
@@ -314,12 +315,10 @@ public class MapsActivity extends FragmentActivity
 
 
     /**
-     * TODO fix grantResults[0] lines: refer to https://github.com/googlemaps/android-samples/blob/master/ApiDemos/app/src/main/java/com/example/mapdemo/PermissionUtils.java line 58
      * Permission request handler
      */
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-
         switch (requestCode) {
             case MY_PERMISSION_ACCESS_FINE_LOCATION:
                 if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -329,7 +328,6 @@ public class MapsActivity extends FragmentActivity
             default:
                 Log.e(TAG, "location permission denied");
                 return;
-
         }
     }
 
@@ -343,7 +341,6 @@ public class MapsActivity extends FragmentActivity
                         REQUESTING_LOCATION_UPDATES_KEY);
 
             }
-
             // Update the value of mCurrentLocation from the Bundle and update the UI to show the
             // correct latitude and longitude.
             if (savedInstanceState.keySet().contains(LOCATION_KEY)) {
@@ -351,7 +348,6 @@ public class MapsActivity extends FragmentActivity
                 // is not null.
                 mCurrentLocation = savedInstanceState.getParcelable(LOCATION_KEY);
             }
-
             // Update the value of mLastUpdateTime from the Bundle and update the UI.
             if (savedInstanceState.keySet().contains(LAST_UPDATE_TIME_KEY)) {
                 mLastUpdateTime = savedInstanceState.getString(LAST_UPDATE_TIME_KEY);
