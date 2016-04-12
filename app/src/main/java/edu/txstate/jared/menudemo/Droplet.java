@@ -1,6 +1,9 @@
 package edu.txstate.jared.menudemo;
 
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -10,7 +13,9 @@ import java.util.HashMap;
 /**
  * Created by jared on 2/28/16.
  */
-public class Droplet {
+public class Droplet implements Parcelable {
+
+    public static final String TAG = "DROPLET";
 
     /* constants */
     public static final String LATITUDE = "latitude";
@@ -75,4 +80,39 @@ public class Droplet {
         return data;
     }
 
+    public String getOwner() {
+        return owner;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.owner);
+        dest.writeDouble(this.latitude);
+        dest.writeDouble(this.longitude);
+        dest.writeString(this.data);
+    }
+
+    protected Droplet(Parcel in) {
+        this.owner = in.readString();
+        this.latitude = in.readDouble();
+        this.longitude = in.readDouble();
+        this.data = in.readString();
+    }
+
+    public static final Parcelable.Creator<Droplet> CREATOR = new Parcelable.Creator<Droplet>() {
+        @Override
+        public Droplet createFromParcel(Parcel source) {
+            return new Droplet(source);
+        }
+
+        @Override
+        public Droplet[] newArray(int size) {
+            return new Droplet[size];
+        }
+    };
 }

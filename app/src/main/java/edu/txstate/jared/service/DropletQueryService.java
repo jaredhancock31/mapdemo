@@ -2,15 +2,12 @@ package edu.txstate.jared.service;
 
 import android.app.IntentService;
 import android.content.Intent;
-import android.content.Context;
-import com.google.android.gms.location.LocationRequest;
+
 import com.google.android.gms.location.LocationResult;
-import com.google.android.gms.location.LocationServices;
+
 import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
-import android.os.Binder;
-import android.os.IBinder;
+import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -20,7 +17,6 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.CookiePolicy;
@@ -43,39 +39,27 @@ import edu.txstate.jared.menudemo.Droplet;
 public class DropletQueryService extends IntentService {
 
     private static final String TAG = "DROPLET_QUERY_SERVICE";
-
-    private IBinder mBinder = new Binder();     // binder given to client activity
+    public static final String DROPLETS_FOUND = "DROPLETS_FOUND";
     private Intent requestIntent;
 
     public DropletQueryService() {
         super(TAG);
     }
 
-    @Override
-    public IBinder onBind(Intent intent) {
-        return mBinder;
-    }
-
 
     @Override
     protected void onHandleIntent(Intent requestIntent) {
+        Log.d(TAG, "onHandleIntent");
         this.requestIntent = requestIntent;
         if (LocationResult.hasResult(requestIntent)) {
             LocationResult locationResult = LocationResult.extractResult(requestIntent);
             Location location = locationResult.getLastLocation();
+
             if (location != null) {
                 Log.d(TAG, "accuracy: " + location.getAccuracy() + " lat: " + location.getLatitude() + " long: " + location.getLongitude());
 
                 try {
                     Log.d(TAG, "starting GET request");
-
-//                    String basicAuth = "Basic " + Base64.encodeToString("txstate:poopscoop".getBytes(), Base64.NO_WRAP);
-//                    conn.setRequestProperty("Authorization", basicAuth);
-
-                    /* Form JSON parameters to send with HTTP request */
-                    JSONObject json = new JSONObject();
-                    json.put(Droplet.LATITUDE, location.getLatitude());
-                    json.put(Droplet.LONGITUDE, location.getLongitude());
 
                     String params = "latitude=";
                     params += Double.toString(location.getLatitude());
@@ -87,28 +71,14 @@ public class DropletQueryService extends IntentService {
 
                     HttpURLConnection conn = (HttpURLConnection) hostUrl.openConnection();
                     conn.setRequestMethod("GET");
-//                    conn.setDoOutput(true);
                     conn.setDoInput(true);
-
-                    Map<String, List<String>> map = conn.getHeaderFields();
-                    for (Map.Entry entry : map.entrySet()) {
-                        Log.d(TAG, entry.getKey() + ": " + entry.getValue());
-                    }
-//                    conn.setRequestProperty("Content-Type", "application/json;");
-//                    conn.setRequestProperty("Accept", "application/json,text/plain");
-//                    OutputStream os = conn.getOutputStream();
-
-                    Log.d(TAG, "params: " + json.toString());
-                    Log.d(TAG, "params (s): " + params);
-//                    os.write(json.toString().getBytes("UTF-8"));        // send location parameters
-//                    os.write(params.getBytes("UTF-8"));
 
                     String inputLine;
                     StringBuilder responseText = new StringBuilder();
                     int responseCode = conn.getResponseCode();
-
                     Log.d(TAG, "GET response Code : " + responseCode);
                     Log.d(TAG, "Response message: " + conn.getResponseMessage());
+
                     if (responseCode == HttpURLConnection.HTTP_OK) {
                         BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 
@@ -117,10 +87,11 @@ public class DropletQueryService extends IntentService {
                         Log.d(TAG, "RESPONSE: " + responseText.toString());     // Log the response from server
                         reader.close();
 
-                        parseJSON(responseText.toString());     // make Droplet Array from response
+                        ArrayList<Droplet> droplets = parseJSON(responseText.toString());     // make Droplet Array from response
+                        Bundle bundle = new Bundle();
+                        bundle.putParcelableArrayList(Droplet.TAG, droplets);
+                        broadcastResults(bundle);
                     }
-//                    os.flush();
-//                    os.close();
                     conn.disconnect();
 
                 } catch (MalformedURLException e) {
@@ -137,8 +108,7 @@ public class DropletQueryService extends IntentService {
     }
 
 
-
-    public void parseJSON(String response) throws JSONException {
+    public ArrayList<Droplet> parseJSON(String response) throws JSONException {
         JSONArray jsonArray = new JSONArray(response);
         ArrayList<Droplet> dropList = new ArrayList<Droplet>();     // pass this to Map to be drawn
 
@@ -153,9 +123,16 @@ public class DropletQueryService extends IntentService {
             Droplet droplet = new Droplet(owner, latitude, longitude, data);
             dropList.add(droplet);
         }
-        // TODO callback to tell the MapsActivity to draw some droplets
+        return dropList;
     }
 
+
+    public void broadcastResults(Bundle bundle) {
+        Log.d(TAG, "broadcasting results");
+        Intent intent = new Intent(DROPLETS_FOUND);
+        intent.putExtra("BUNDLE", bundle);
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+    }
 
 
     public String fetchCSRF() {
@@ -172,7 +149,6 @@ public class DropletQueryService extends IntentService {
             for (Map.Entry entry : map.entrySet()) {
                 Log.d(TAG, entry.getKey() + ": " + entry.getValue());
             }
-
             CookieStore cookieJar = manager.getCookieStore();
             List<HttpCookie> cookies = cookieJar.getCookies();
 
@@ -188,7 +164,6 @@ public class DropletQueryService extends IntentService {
                     csrfToken = c.getValue();
                 }
             }
-
             String cookieStr = cookies.get(0).toString();
             Log.d(TAG, "cookieStr: " + cookieStr);
 

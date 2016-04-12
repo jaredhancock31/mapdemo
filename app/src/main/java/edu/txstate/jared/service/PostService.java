@@ -3,9 +3,7 @@ package edu.txstate.jared.service;
 import android.app.IntentService;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.ResultReceiver;
 import android.preference.PreferenceManager;
-import android.util.Base64;
 import android.util.Log;
 
 import org.json.JSONException;
@@ -15,8 +13,6 @@ import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.CookiePolicy;
@@ -31,7 +27,6 @@ import java.util.List;
 import java.util.Map;
 
 import edu.txstate.jared.menudemo.Droplet;
-import edu.txstate.jared.menudemo.DropletDiscoveryListener;
 
 /**
  * An {@link IntentService} subclass for handling asynchronous task requests in
