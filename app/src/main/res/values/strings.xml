@@ -1,8 +1,9 @@
 <resources>
-    <string name="app_name">GeoShareTX</string>
+    <string name="app_name">GeoShare</string>
     <string name="google_app_id">sixth-cider-120305</string>
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="auth_token_key">edu.txstate.jared.AUTH_TOKEN_KEY</string>
+
 
     <string name="action_settings">Settings</string>
 

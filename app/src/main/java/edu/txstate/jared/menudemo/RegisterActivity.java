@@ -1,6 +1,7 @@
 package edu.txstate.jared.menudemo;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -10,9 +11,15 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import edu.txstate.jared.service.AsyncAuth;
+
 public class RegisterActivity extends AppCompatActivity {
 
-    private static final String TAG = "REGISTERACTIVITY";
+    public static final String TAG = "REGISTERACTIVITY";
+    public static final String AUTH_FAILED = "AUTH_FAILED";
 
     private Button registerButton;
     private EditText emailField;
@@ -44,13 +51,32 @@ public class RegisterActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
     }
 
 
     private void attemptRegister(View view) {
         Log.d(TAG, "attempting to register");
-        //TODO register logic
+        registerButton.setEnabled(false);
+        try {
+
+            JSONObject json = new JSONObject();
+            json.put("username", usernameField.getText().toString());
+            json.put("email", emailField.getText().toString());
+            json.put("password1", pwdField.getText().toString());
+            json.put("password2", pwdField.getText().toString());
+
+            AsyncAuth auth = new AsyncAuth(this);
+            auth.execute(json);
+//            while(auth.getStatus().equals(AsyncTask.Status.RUNNING)) {
+//                registerButton.setEnabled(false);
+//            }
+
+            // TODO get the result of the asyncAuth, react appropriately
+            onRegisterSuccess();
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
 
@@ -73,10 +99,14 @@ public class RegisterActivity extends AppCompatActivity {
         return valid;
     }
 
+
     private void onRegisterSuccess() {
         Log.d(TAG, "registration success");
-        registerButton.setEnabled(true);
-        finish();   // activity is finished and can be closed
+//        registerButton.setEnabled(true);
+        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+
+        startActivity(intent);          /* go to main menu */
+        finish();                       // activity is finished and can be taken off stack
     }
 
     private void onRegisterFailed() {

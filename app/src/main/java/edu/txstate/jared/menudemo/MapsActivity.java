@@ -172,7 +172,8 @@ public class MapsActivity extends FragmentActivity
 
 
     public void stopLocationUpdates() {
-        LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, mRequestLocationUpdatesPendingIntent);
+        if(mGoogleApiClient.isConnected())
+            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, mRequestLocationUpdatesPendingIntent);
     }
 
 
@@ -198,7 +199,6 @@ public class MapsActivity extends FragmentActivity
     }
 
     protected void onStop() {
-        mGoogleApiClient.disconnect();
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
         stopLocationUpdates();
         super.onStop();
@@ -311,8 +311,7 @@ public class MapsActivity extends FragmentActivity
     @Override
     public void onPause() {
         super.onPause();
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
-        stopLocationUpdates();
+
     }
 
 

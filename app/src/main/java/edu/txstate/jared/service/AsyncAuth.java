@@ -1,29 +1,20 @@
 package edu.txstate.jared.service;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 import android.util.Log;
-
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
+import org.json.JSONException;
+import org.json.JSONObject;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
-import java.net.CookieHandler;
-import java.net.CookieManager;
-import java.net.CookiePolicy;
-import java.net.CookieStore;
-import java.net.HttpCookie;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLEncoder;
-import java.util.List;
+import edu.txstate.jared.menudemo.R;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.RequestBody;
+import okhttp3.Request;
+import okhttp3.Response;
+import okhttp3.internal.framed.Header;
 
 /**
  * This class is responsible for logging in or registering to the server and retrieving the
@@ -31,84 +22,65 @@ import java.util.List;
  *
  * Created by jared on 3/29/16.
  */
-public class AsyncAuth extends AsyncTask<String, Void, Boolean> {
+public class AsyncAuth extends AsyncTask<JSONObject, Void, Boolean> {
 
-    public static final String TAG = "AUTH";
+    public static final String TAG =            "AUTH";
+    public static final String TOKEN =          "TOKEN";
+    public Boolean authSuccess;
+    public Context context;
 
-    public AsyncAuth() {
-        //
+    public AsyncAuth(Context context) {
+        this.context = context;
+        authSuccess = false;
     }
 
     @Override
-    protected Boolean doInBackground(String... params) {
-
+    protected Boolean doInBackground(JSONObject... params) {
         try {
-            CookieManager manager = new CookieManager();
-            manager.setCookiePolicy(CookiePolicy.ACCEPT_ALL);
-            CookieHandler.setDefault(manager);
-            URL url = new URL("http://104.236.181.178:8000/dummy/");
-            URLConnection connection = url.openConnection();
-            connection.getContent();
+            OkHttpClient client = new OkHttpClient();
 
-            CookieStore cookieJar = manager.getCookieStore();
-            List<HttpCookie> cookies = cookieJar.getCookies();
+            MediaType mediaType = MediaType.parse("application/json");
+            RequestBody requestBody = RequestBody.create(mediaType, params[0].toString());
+            Log.d(TAG, "params: " + String.valueOf(params[0]));
 
-            String cookieString = "";
-            String csfrToken = "";
+            Request request = new Request.Builder()
+                    .url("http://104.236.181.178:8000/rest-auth/registration/")
+                    .post(requestBody)
+                    .addHeader("content-type", "application/json")
+                    .addHeader("cache-control", "no-cache")
+                    .addHeader("Connection", "keep-alive")
+                    .build();
+            Response response = client.newCall(request).execute();
+            String responseBody = response.body().string();
 
-            for (HttpCookie c : cookies) {
-                Log.d(TAG, "Got cookie: " + c.toString());
+            Log.d(TAG, "response: " + response.message());
+            Log.d(TAG, "response body: " + responseBody);
+//            for (String header : response.headers().names()) {
+//                Log.d(TAG, response.header(header));
+//            }
 
-                cookieString += c.getName() + "=" + c.getValue() + ";";
-
-                if (c.getName().equals("csrftoken")) {
-                    csfrToken = c.getValue();
-                }
+            if (response.code() < 400) {
+                JSONObject jsonResponse = new JSONObject(responseBody);
+                saveAuthToken(jsonResponse.getString("key"));
+                authSuccess = true;
             }
-
-            String cookieStr = cookies.get(0).toString();
-            Log.d(TAG, "cookieStr: " + cookieStr);
-
-            String pStr = URLEncoder.encode("?username=johntest1&email=hipbd@slipry.net&password=Password1", "UTF-8");
-            URL hostUrl = new URL("http://104.236.181.178:8000/rest-auth/login/");
-            HttpURLConnection conn = (HttpURLConnection) hostUrl.openConnection();
-            Log.d(TAG, "opened the conn");
-
-            conn.setRequestMethod("POST");
-            conn.setDoOutput(true);
-            conn.setDoInput(true);
-            conn.setRequestProperty("X-CSRFToken", csfrToken);
-            conn.setRequestProperty("Cookie", cookieString);
-            conn.setRequestProperty("Connections", "keep-alive");
-
-            OutputStream out = new BufferedOutputStream(conn.getOutputStream());
-            out.write(pStr.getBytes());
-
-            // Getting 400 here
-
-            Log.d(TAG, "wrote the bytes");
-            BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-
-            Integer responseCode = conn.getResponseCode();
-            Log.d(TAG, "response code: " + responseCode.toString());
-            String line;
-
-            while ((line = reader.readLine()) != null) {
-                Log.d(TAG, line);
-            }
-            out.flush();
-            out.close();
-            reader.close();
-
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        } catch (ProtocolException e) {
+        } catch (JSONException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return null;
+        return authSuccess;
     }
+
+
+    public void saveAuthToken(String token) {
+        String token_key = context.getResources().getString(R.string.auth_token_key);
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
+        settings.edit().putString(token_key, token).apply();
+    }
+
+//    @Override
+//    protected void onPostExecute(Boolean aBoolean) {
+//        super.onPostExecute(aBoolean);
+//    }
 }
