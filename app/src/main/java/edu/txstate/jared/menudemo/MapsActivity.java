@@ -8,12 +8,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Handler;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
@@ -108,6 +110,11 @@ public class MapsActivity extends FragmentActivity
         });
         // update vals using data stored in the Bundle
         updateValuesFromBundle(savedInstanceState);
+
+        //DEBUG
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        String username = settings.getString(User.USERNAME, "jared");
+        Log.d(TAG, username);
     }
 
 

@@ -56,6 +56,12 @@ public class RegisterActivity extends AppCompatActivity implements AsyncAuth.Asy
                 finish();
             }
         });
+
+        //DEBUG
+//        SharedPreferences settings = getApplicationContext().getSharedPreferences("geoPrefs", 0);
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        String username = settings.getString(User.USERNAME, "asdf");
+        Log.d(TAG, username);
     }
 
 
@@ -108,6 +114,7 @@ public class RegisterActivity extends AppCompatActivity implements AsyncAuth.Asy
     public void processResult(boolean success) {
         if (success) {
             Log.d(TAG, "registration success");
+            saveUserInfo();
             Intent intent = new Intent(getApplicationContext(), MainActivity.class);
             startActivity(intent);          /* go to main menu */
             finish();                       // activity is finished and can be taken off stack
@@ -122,7 +129,14 @@ public class RegisterActivity extends AppCompatActivity implements AsyncAuth.Asy
 
     private void saveUserInfo() {
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        settings.edit().putString(User.USERNAME, usernameField.getText().toString());
-        settings.edit().putString(User.EMAIL, emailField.getText().toString());
+//        SharedPreferences settings = getApplicationContext().getSharedPreferences("geoPrefs", 0);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putString(User.USERNAME, usernameField.getText().toString());
+//        editor.putString(User.EMAIL, emailField.getText().toString());
+        editor.commit();
+
+        settings = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        String username = settings.getString(User.USERNAME, "asdf");
+        Log.d(TAG, username);
     }
 }
