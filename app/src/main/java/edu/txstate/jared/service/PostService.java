@@ -27,6 +27,12 @@ import java.util.List;
 import java.util.Map;
 
 import edu.txstate.jared.menudemo.Droplet;
+import edu.txstate.jared.menudemo.User;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 /**
  * An {@link IntentService} subclass for handling asynchronous task requests in
@@ -38,7 +44,6 @@ public class PostService extends IntentService {
 
     /* constants */
     public static final String TAG =                                "POSTSERVICE";
-    public static final String TOKEN_KEY =                          "TOKEN_KEY";
     public static final String METHOD_GET =                         "GET";
     public static final String METHOD_POST =                        "POST";
     public static final String PARAMS_EXTRA =                       "PARAMS";
@@ -78,46 +83,75 @@ public class PostService extends IntentService {
                     Log.d(TAG, "starting POST request");
 
                     JSONObject json = new JSONObject();
-                    json.put(Droplet.OWNER, "Jared");
+//                    json.put(Droplet.OWNER, "Jared");
                     json.put(Droplet.LATITUDE, latitude);
                     json.put(Droplet.LONGITUDE, longitude);
                     json.put(Droplet.DATA, data);
 
-                    URL hostUrl = new URL(HOST + "droplets/all/");
+                    String token = getAuthToken();
 
-                    /* setup headers */
-                    HttpURLConnection conn = (HttpURLConnection) hostUrl.openConnection();
-                    conn.setRequestMethod("POST");
-                    conn.setDoOutput(true);
-                    conn.setDoInput(true);
-                    conn.setUseCaches(false);
-                    conn.setRequestProperty("Connection", "keep-alive");
-                    conn.setRequestProperty("Content-Type", "application/json; charset=utf-8");
+                    OkHttpClient client = new OkHttpClient();
 
-                    DataOutputStream os = new DataOutputStream(conn.getOutputStream());
+                    MediaType mediaType = MediaType.parse("application/json");
+                    RequestBody body = RequestBody.create(mediaType, json.toString());
+                    Request request = new Request.Builder()
+                            .url("http://104.236.181.178:8000/droplets/all/")
+                            .post(body)
+                            .addHeader("authorization", "Token " + token)
+                            .addHeader("content-type", "application/json")
+                            .addHeader("cache-control", "no-cache")
+                            .build();
 
-                    /* send params to server */
-                    Log.d(TAG, "JSON object, valueOf(): " + String.valueOf(json));
-                    os.write(String.valueOf(json).getBytes("UTF-8"));
-                    os.flush();
-                    os.close();
+                    Response response = client.newCall(request).execute();
+                    String responseBody = response.body().string();
 
-                    /* check out the response from the server */
-                    int responseCode = conn.getResponseCode();
-                    Log.d(TAG, "POST response Code : " + responseCode);                 // looking for a 201
-                    Log.d(TAG, "POST response message: " + conn.getResponseMessage());  // looking for 'Created'
-
-                    /* read response if POST was a success */
-                    if (responseCode < 400) {
-                        String inputLine;
-                        String responseText = "";
-                        BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-                        while ((inputLine = reader.readLine()) != null)
-                            responseText += inputLine;
-
-                        reader.close();
+                    Log.d(TAG, "response: " + response.message());
+                    Log.d(TAG, "response body: " + responseBody);
+                    /* uncomment this loop to log the headers */
+//            for (String header : response.headers().names()) {
+//                Log.d(TAG, response.header(header));
+//            }
+                    if (response.code() < 400) {
+                        // do stff
                     }
-                    conn.disconnect();
+
+
+
+//                    URL hostUrl = new URL(HOST + "droplets/all/");
+//
+//                    /* setup headers */
+//                    HttpURLConnection conn = (HttpURLConnection) hostUrl.openConnection();
+//                    conn.setRequestMethod("POST");
+//                    conn.setDoOutput(true);
+//                    conn.setDoInput(true);
+//                    conn.setUseCaches(false);
+//                    conn.setRequestProperty("Connection", "keep-alive");
+//                    conn.setRequestProperty("Content-Type", "application/json; charset=utf-8");
+//
+//                    DataOutputStream os = new DataOutputStream(conn.getOutputStream());
+//
+//                    /* send params to server */
+//                    Log.d(TAG, "JSON object, valueOf(): " + String.valueOf(json));
+//                    os.write(String.valueOf(json).getBytes("UTF-8"));
+//                    os.flush();
+//                    os.close();
+//
+//                    /* check out the response from the server */
+//                    int responseCode = conn.getResponseCode();
+//                    Log.d(TAG, "POST response Code : " + responseCode);                 // looking for a 201
+//                    Log.d(TAG, "POST response message: " + conn.getResponseMessage());  // looking for 'Created'
+//
+//                    /* read response if POST was a success */
+//                    if (responseCode < 400) {
+//                        String inputLine;
+//                        String responseText = "";
+//                        BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+//                        while ((inputLine = reader.readLine()) != null)
+//                            responseText += inputLine;
+//
+//                        reader.close();
+//                    }
+//                    conn.disconnect();
 
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
@@ -183,7 +217,7 @@ public class PostService extends IntentService {
 
     public String getAuthToken() {
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        String token = settings.getString(PostService.TOKEN_KEY, "");
+        String token = settings.getString(User.AUTH_TOKEN, "");
         return token;
     }
 

@@ -9,6 +9,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import java.io.IOException;
 import edu.txstate.jared.menudemo.R;
+import edu.txstate.jared.menudemo.User;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
@@ -26,22 +27,63 @@ public class AsyncAuth extends AsyncTask<JSONObject, Void, Boolean> {
 
     public static final String TAG =            "AUTH";
     public static final String TOKEN =          "TOKEN";
+    public AsyncResponse delegate =              null;
     public Boolean authSuccess;
+    public Boolean isRegistered;
     public Context context;
 
-    public AsyncAuth(Context context) {
+
+    public interface AsyncResponse {
+        void processResult(boolean success);
+    }
+
+
+    /**
+     * Constructor for AsyncAuth.
+     * @param context Activity this was called from
+     * @param delegate object that has implemented AsyncResponse that will receive the results of
+     *                 this task
+     * @param isRegistered toggle between login/registration; true if already signed up as a user,
+     *                     false if user has not been registered yet.
+     */
+    public AsyncAuth(Context context, AsyncResponse delegate, Boolean isRegistered) {
         this.context = context;
+        this.delegate = delegate;
+        this.isRegistered = isRegistered;
         authSuccess = false;
     }
 
+
+    /**
+     * This method is automatically called when AsyncAuth instance.execute() is called from an
+     * Activity.
+     * @param params request body with User info to be sent to the server for login/registration
+     * @return auth success status
+     */
     @Override
     protected Boolean doInBackground(JSONObject... params) {
+        if (isRegistered) {
+            return login(params[0]);
+        }
+        else {
+            return register(params[0]);
+        }
+    }
+
+
+    @Override
+    protected void onPostExecute(Boolean result) {
+        delegate.processResult(result);
+    }
+
+
+    public Boolean register(JSONObject params) {
         try {
             OkHttpClient client = new OkHttpClient();
 
             MediaType mediaType = MediaType.parse("application/json");
-            RequestBody requestBody = RequestBody.create(mediaType, params[0].toString());
-            Log.d(TAG, "params: " + String.valueOf(params[0]));
+            RequestBody requestBody = RequestBody.create(mediaType, params.toString());
+            Log.d(TAG, "params: " + String.valueOf(params));
 
             Request request = new Request.Builder()
                     .url("http://104.236.181.178:8000/rest-auth/registration/")
@@ -55,14 +97,70 @@ public class AsyncAuth extends AsyncTask<JSONObject, Void, Boolean> {
 
             Log.d(TAG, "response: " + response.message());
             Log.d(TAG, "response body: " + responseBody);
+
+            /* uncomment this loop to log the headers */
 //            for (String header : response.headers().names()) {
 //                Log.d(TAG, response.header(header));
 //            }
-
             if (response.code() < 400) {
                 JSONObject jsonResponse = new JSONObject(responseBody);
-                saveAuthToken(jsonResponse.getString("key"));
-                authSuccess = true;
+                if (jsonResponse.has("key")) {
+                    saveAuthToken(jsonResponse.getString("key"));
+                    authSuccess = true;
+                }
+                else {
+                    Log.e(TAG, "Not 400, but 'key' not found in response.");
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return authSuccess;
+    }
+
+
+    /**
+     * Send POST request with login parameters in request body. Save the token when successfully
+     * authenticated
+     * @param params username, email, password
+     * @return auth success
+     */
+    public Boolean login(JSONObject params) {
+        try {
+            OkHttpClient client = new OkHttpClient();
+
+            MediaType mediaType = MediaType.parse("application/json");
+            RequestBody requestBody = RequestBody.create(mediaType, params.toString());
+            Log.d(TAG, "params: " + String.valueOf(params));
+
+            Request request = new Request.Builder()
+                    .url("http://104.236.181.178:8000/rest-auth/login/")
+                    .post(requestBody)
+                    .addHeader("content-type", "application/json")
+                    .addHeader("cache-control", "no-cache")
+                    .addHeader("Connection", "keep-alive")
+                    .build();
+            Response response = client.newCall(request).execute();
+            String responseBody = response.body().string();
+
+            Log.d(TAG, "response: " + response.message());
+            Log.d(TAG, "response body: " + responseBody);
+
+            /* uncomment this loop to log the headers */
+//            for (String header : response.headers().names()) {
+//                Log.d(TAG, response.header(header));
+//            }
+            if (response.code() < 400) {
+                JSONObject jsonResponse = new JSONObject(responseBody);
+                if (jsonResponse.has("key")) {
+                    saveAuthToken(jsonResponse.getString("key"));
+                    authSuccess = true;
+                }
+                else {
+                    Log.e(TAG, "Not 400, but 'key' not found in response.");
+                }
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -74,13 +172,8 @@ public class AsyncAuth extends AsyncTask<JSONObject, Void, Boolean> {
 
 
     public void saveAuthToken(String token) {
-        String token_key = context.getResources().getString(R.string.auth_token_key);
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
-        settings.edit().putString(token_key, token).apply();
+        settings.edit().putString(User.AUTH_TOKEN, token).apply();
     }
 
-//    @Override
-//    protected void onPostExecute(Boolean aBoolean) {
-//        super.onPostExecute(aBoolean);
-//    }
 }

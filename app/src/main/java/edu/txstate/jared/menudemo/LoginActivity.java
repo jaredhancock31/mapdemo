@@ -14,6 +14,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -32,10 +35,9 @@ import java.util.List;
 
 import edu.txstate.jared.service.AsyncAuth;
 
-public class LoginActivity extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity implements AsyncAuth.AsyncResponse{
 
     public static final String TAG = "LOGINACTIVITY";
-    public static final String TOKEN_KEY = "TOKEN_KEY";
 
     private Button loginButton;
     private EditText emailField;
@@ -68,6 +70,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(),RegisterActivity.class );
                 startActivity(intent);
+                finish();
             }
         });
     }
@@ -80,35 +83,22 @@ public class LoginActivity extends AppCompatActivity {
     private void attemptLogin(View view) throws IOException {
         Log.d(TAG, "logging in");
 
-        // Send POST request to server
-//        AsyncAuth auth = new AsyncAuth();
-//        auth.execute();
+        // get username from settings
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
+        String username = settings.getString(User.USERNAME, "jared");
 
-//        if (!validate()) {
-//            onLoginFail();
-//            return;
-//        }
+        try {
+            JSONObject json = new JSONObject();
+            json.put("username", username);
+            json.put("email", emailField.getText().toString());
+            json.put("password", pwdField.getText().toString());
 
-//
-//
-//        loginButton.setEnabled(true);
-//
-//        final ProgressDialog prog = new ProgressDialog(LoginActivity.this, R.style.AppTheme_PopupOverlay);
-//        prog.setIndeterminate(true);
-//        prog.setMessage("Don't look behind you... ");
-//        prog.show();
-//        new android.os.Handler().postDelayed(
-//                new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        onLoginSuccess();
-//                        prog.dismiss();
-//                    }
-//                }, 3000);
+            AsyncAuth authTask = new AsyncAuth(this, this, true);
+            authTask.execute(json);
 
-        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-        startActivity(intent);
-
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
 
@@ -131,27 +121,18 @@ public class LoginActivity extends AppCompatActivity {
     }
 
 
-    /**
-     * Takes an Auth Token and saves it globally to the User's shared preferences
-     * @param token auth token retrieved from backend.
-     */
-    private void saveAuthToken(String token) {
-        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
-        SharedPreferences.Editor editor = settings.edit();
-        editor.putString(TOKEN_KEY, token);
-        editor.commit();
+    @Override
+    public void processResult(boolean success) {
+        if (success) {
+            Log.d(TAG, "login success");
+            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+            startActivity(intent);          /* go to main menu */
+            finish();                       // activity is finished and can be taken off stack
+        }
+        else {
+            Log.d(TAG, "login failed");
+            loginButton.setEnabled(true);
+            pwdField.setText("");           // reset pwd field
+        }
     }
-
-
-    private void onLoginFail() {
-        Log.e(TAG, "Login failed");
-        // show some kind of error message
-        loginButton.setEnabled(true);
-    }
-
-    private void onLoginSuccess() {
-        loginButton.setEnabled(true);
-        finish();   // activity is finished and can be closed
-    }
-
 }

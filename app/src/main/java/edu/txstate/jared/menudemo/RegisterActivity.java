@@ -1,7 +1,10 @@
 package edu.txstate.jared.menudemo;
 
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -16,10 +19,11 @@ import org.json.JSONObject;
 
 import edu.txstate.jared.service.AsyncAuth;
 
-public class RegisterActivity extends AppCompatActivity {
+public class RegisterActivity extends AppCompatActivity implements AsyncAuth.AsyncResponse {
 
-    public static final String TAG = "REGISTERACTIVITY";
-    public static final String AUTH_FAILED = "AUTH_FAILED";
+    public static final String TAG =                    "REGISTERACTIVITY";
+    public static final String AUTH_FAILED =            "AUTH_FAILED";
+
 
     private Button registerButton;
     private EditText emailField;
@@ -49,30 +53,25 @@ public class RegisterActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
                 startActivity(intent);
+                finish();
             }
         });
     }
 
 
+    // TODO make 2nd pwd field and validate everything
     private void attemptRegister(View view) {
-        Log.d(TAG, "attempting to register");
+        Log.d(TAG, "starting authTask");
         registerButton.setEnabled(false);
         try {
-
             JSONObject json = new JSONObject();
             json.put("username", usernameField.getText().toString());
             json.put("email", emailField.getText().toString());
             json.put("password1", pwdField.getText().toString());
             json.put("password2", pwdField.getText().toString());
 
-            AsyncAuth auth = new AsyncAuth(this);
-            auth.execute(json);
-//            while(auth.getStatus().equals(AsyncTask.Status.RUNNING)) {
-//                registerButton.setEnabled(false);
-//            }
-
-            // TODO get the result of the asyncAuth, react appropriately
-            onRegisterSuccess();
+            AsyncAuth authTask = new AsyncAuth(this, this, false);
+            authTask.execute(json);
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -100,17 +99,30 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
 
-    private void onRegisterSuccess() {
-        Log.d(TAG, "registration success");
-//        registerButton.setEnabled(true);
-        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-
-        startActivity(intent);          /* go to main menu */
-        finish();                       // activity is finished and can be taken off stack
+    /**
+     * Catches the result of the AsyncAuth instance. If registration was successful, advance the user
+     * to the MainActivity view.
+     * @param success result of authentication attempt
+     */
+    @Override
+    public void processResult(boolean success) {
+        if (success) {
+            Log.d(TAG, "registration success");
+            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+            startActivity(intent);          /* go to main menu */
+            finish();                       // activity is finished and can be taken off stack
+        }
+        else {
+            Log.d(TAG, "registration failed");
+            registerButton.setEnabled(true);
+            pwdField.setText("");           // reset pwd field
+        }
     }
 
-    private void onRegisterFailed() {
-        Log.e(TAG, "registration failed");
-        registerButton.setEnabled(true);
+
+    private void saveUserInfo() {
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        settings.edit().putString(User.USERNAME, usernameField.getText().toString());
+        settings.edit().putString(User.EMAIL, emailField.getText().toString());
     }
 }
