@@ -2,6 +2,7 @@ package edu.txstate.jared.menudemo;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -11,12 +12,30 @@ import android.view.View;
 import android.widget.Button;
 import android.preference.PreferenceManager;
 
+import com.google.android.gms.appindexing.Action;
+import com.google.android.gms.appindexing.AppIndex;
+import com.google.android.gms.common.api.GoogleApiClient;
 
-public class MainActivity extends AppCompatActivity {
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+
+import edu.txstate.jared.service.AsyncAuth;
+
+
+public class MainActivity extends AppCompatActivity implements AsyncAuth.AsyncResponse {
 
     public Button gotoMapButton;
+    public Button logoutButton;
+    public Button gotoProfileButton;
 
     public static final String TAG = "MAINACTIVITY";
+    /**
+     * ATTENTION: This was auto-generated to implement the App Indexing API.
+     * See https://g.co/AppIndexing/AndroidStudio for more information.
+     */
+    private GoogleApiClient client;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +51,28 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        gotoProfileButton = (Button) findViewById(R.id.profileButton);
+        gotoProfileButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "Profile button clicked.");
+            }
+        });
+
+        logoutButton = (Button) findViewById(R.id.logoutButton);
+        logoutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "Logout button clicked.");
+                try {
+                    attemptLogout(v);
+                } catch (IOException e) {
+                    Log.d(TAG, "IOexception on attempted logout");
+                    e.printStackTrace();
+                }
+            }
+        });
+
         //DEBUG
 //        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 //        SharedPreferences.Editor editor = settings.edit();
@@ -43,6 +84,9 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         String username = settings.getString(User.USERNAME, "asdf");
         Log.d(TAG, username);
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
 
     @Override
@@ -72,4 +116,35 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    private void attemptLogout(View view) throws IOException {
+        Log.d(TAG, "logging out");
+
+        // get username from settings
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
+        String token = settings.getString(User.AUTH_TOKEN, "no_token");
+
+        try {
+            JSONObject json = new JSONObject();
+            json.put("token", token);
+
+            AsyncAuth authTask = new AsyncAuth(this, this, User.LOGOUT);
+            authTask.execute(json);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void processResult(boolean success) {
+        if (success) {
+            Log.d(TAG, "logout success");
+            Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+            startActivity(intent);          /* go to login screen */
+            finish();                       // activity is finished and can be taken off stack
+        }
+        else {
+            Log.d(TAG, "logout failed");
+        }
+    }
 }

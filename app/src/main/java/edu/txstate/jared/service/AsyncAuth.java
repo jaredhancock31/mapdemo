@@ -29,7 +29,7 @@ public class AsyncAuth extends AsyncTask<JSONObject, Void, Boolean> {
     public static final String TOKEN =          "TOKEN";
     public AsyncResponse delegate =              null;
     public Boolean authSuccess;
-    public Boolean isRegistered;
+    public int authAction;
     public Context context;
 
 
@@ -43,13 +43,13 @@ public class AsyncAuth extends AsyncTask<JSONObject, Void, Boolean> {
      * @param context Activity this was called from
      * @param delegate object that has implemented AsyncResponse that will receive the results of
      *                 this task
-     * @param isRegistered toggle between login/registration; true if already signed up as a user,
-     *                     false if user has not been registered yet.
+     * @param authAction toggle between login/registration/logout; 1 if already signed up as a user,
+     *                     0 if user has not been registered yet, 2 if user wants to log out.
      */
-    public AsyncAuth(Context context, AsyncResponse delegate, Boolean isRegistered) {
+    public AsyncAuth(Context context, AsyncResponse delegate, int authAction) {
         this.context = context;
         this.delegate = delegate;
-        this.isRegistered = isRegistered;
+        this.authAction = authAction;
         authSuccess = false;
     }
 
@@ -62,11 +62,14 @@ public class AsyncAuth extends AsyncTask<JSONObject, Void, Boolean> {
      */
     @Override
     protected Boolean doInBackground(JSONObject... params) {
-        if (isRegistered) {
+        if (authAction == User.LOGIN) {
             return login(params[0]);
         }
-        else {
+        else if (authAction == User.REGISTER) {
             return register(params[0]);
+        }
+        else {
+            return logout(params[0]);
         }
     }
 
@@ -170,6 +173,48 @@ public class AsyncAuth extends AsyncTask<JSONObject, Void, Boolean> {
         return authSuccess;
     }
 
+    /**
+     * Send POST request with logout parameters in request body.
+     * @param params token
+     * @return auth success
+     */
+    public Boolean logout(JSONObject params) {
+        try {
+            OkHttpClient client = new OkHttpClient();
+
+            MediaType mediaType = MediaType.parse("application/json");
+            RequestBody requestBody = RequestBody.create(mediaType, params.toString());
+            Log.d(TAG, "params: " + String.valueOf(params));
+
+            Request request = new Request.Builder()
+                    .url("http://104.236.181.178:8000/rest-auth/logout/")
+                    .post(requestBody)
+                    .addHeader("content-type", "application/json")
+                    .addHeader("cache-control", "no-cache")
+                    .addHeader("Connection", "keep-alive")
+                    .build();
+            Response response = client.newCall(request).execute();
+            String responseBody = response.body().string();
+
+            Log.d(TAG, "response: " + response.message());
+            Log.d(TAG, "response body: " + responseBody);
+
+            /* uncomment this loop to log the headers */
+//            for (String header : response.headers().names()) {
+//                Log.d(TAG, response.header(header));
+//            }
+            if (response.code() < 400) {
+                JSONObject jsonResponse = new JSONObject(responseBody);
+                Log.d(TAG, "response: " + String.valueOf(jsonResponse));
+                authSuccess = true;
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return authSuccess;
+    }
 
     public void saveAuthToken(String token) {
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);

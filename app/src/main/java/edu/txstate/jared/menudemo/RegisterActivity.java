@@ -76,7 +76,7 @@ public class RegisterActivity extends AppCompatActivity implements AsyncAuth.Asy
             json.put("password1", pwdField.getText().toString());
             json.put("password2", pwdField.getText().toString());
 
-            AsyncAuth authTask = new AsyncAuth(this, this, false);
+            AsyncAuth authTask = new AsyncAuth(this, this, User.REGISTER);
             authTask.execute(json);
 
         } catch (JSONException e) {

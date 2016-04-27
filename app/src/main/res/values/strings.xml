@@ -24,4 +24,5 @@
     <string name="usernameText">Username</string>
     <string name="latitudeText">Latitude</string>
     <string name="longText">Longitude</string>
+    <string name="logoutButtonText">Log Out</string>
 </resources>

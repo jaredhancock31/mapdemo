@@ -93,7 +93,7 @@ public class LoginActivity extends AppCompatActivity implements AsyncAuth.AsyncR
             json.put("email", emailField.getText().toString());
             json.put("password", pwdField.getText().toString());
 
-            AsyncAuth authTask = new AsyncAuth(this, this, true);
+            AsyncAuth authTask = new AsyncAuth(this, this, User.LOGIN);
             authTask.execute(json);
 
         } catch (JSONException e) {
