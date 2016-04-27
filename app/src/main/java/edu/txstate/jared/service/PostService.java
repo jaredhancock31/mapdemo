@@ -73,7 +73,7 @@ public class PostService extends IntentService {
         String latitude = requestIntent.getStringExtra(LATITUDE_EXTRA);
         String longitude = requestIntent.getStringExtra(LONGITUDE_EXTRA);
         String data = requestIntent.getStringExtra(DATA_EXTRA);
-        String droplet = requestIntent.getStringExtra(JSON_EXTRA);      //droplet formatted as JSON
+//        String droplet = requestIntent.getStringExtra(JSON_EXTRA);      //droplet formatted as JSON
 
         switch (method) {
 
@@ -107,51 +107,15 @@ public class PostService extends IntentService {
 
                     Log.d(TAG, "response: " + response.message());
                     Log.d(TAG, "response body: " + responseBody);
+                    
                     /* uncomment this loop to log the headers */
 //            for (String header : response.headers().names()) {
 //                Log.d(TAG, response.header(header));
 //            }
                     if (response.code() < 400) {
-                        // do stff
+                        // do stuff
                     }
 
-
-
-//                    URL hostUrl = new URL(HOST + "droplets/all/");
-//
-//                    /* setup headers */
-//                    HttpURLConnection conn = (HttpURLConnection) hostUrl.openConnection();
-//                    conn.setRequestMethod("POST");
-//                    conn.setDoOutput(true);
-//                    conn.setDoInput(true);
-//                    conn.setUseCaches(false);
-//                    conn.setRequestProperty("Connection", "keep-alive");
-//                    conn.setRequestProperty("Content-Type", "application/json; charset=utf-8");
-//
-//                    DataOutputStream os = new DataOutputStream(conn.getOutputStream());
-//
-//                    /* send params to server */
-//                    Log.d(TAG, "JSON object, valueOf(): " + String.valueOf(json));
-//                    os.write(String.valueOf(json).getBytes("UTF-8"));
-//                    os.flush();
-//                    os.close();
-//
-//                    /* check out the response from the server */
-//                    int responseCode = conn.getResponseCode();
-//                    Log.d(TAG, "POST response Code : " + responseCode);                 // looking for a 201
-//                    Log.d(TAG, "POST response message: " + conn.getResponseMessage());  // looking for 'Created'
-//
-//                    /* read response if POST was a success */
-//                    if (responseCode < 400) {
-//                        String inputLine;
-//                        String responseText = "";
-//                        BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-//                        while ((inputLine = reader.readLine()) != null)
-//                            responseText += inputLine;
-//
-//                        reader.close();
-//                    }
-//                    conn.disconnect();
 
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
@@ -164,55 +128,6 @@ public class PostService extends IntentService {
                 }
         }
     }
-
-
-    public String fetchCSRF() {
-        Log.d(TAG, "attempting CSRF fetch");
-        String csrfToken = "";
-        try {
-            CookieManager manager = new CookieManager();
-            manager.setCookiePolicy(CookiePolicy.ACCEPT_ALL);
-            CookieHandler.setDefault(manager);
-            URL url = new URL("http://104.236.181.178:8000/droplets/all/");
-            URLConnection conn = url.openConnection();
-
-            Map<String, List<String>> map = conn.getHeaderFields();
-            for (Map.Entry entry : map.entrySet()) {
-                Log.d(TAG, entry.getKey() + ": " + entry.getValue());
-            }
-
-
-            conn.getContent();
-
-            CookieStore cookieJar = manager.getCookieStore();
-            List<HttpCookie> cookies = cookieJar.getCookies();
-
-            String cookieString = "";
-
-            for (HttpCookie c : cookies) {
-                Log.d(TAG, "Got cookie: " + c.toString());
-
-                cookieString += c.getName() + "=" + c.getValue() + ";";
-
-                if (c.getName().equals("csrftoken")) {
-                    csrfToken = c.getValue();
-                }
-            }
-            Log.d(TAG, "cookieStr: " + cookieString);
-            Log.d(TAG, "csrfToken: " + csrfToken);
-//            String cookieStr = cookies.get(0).toString();
-
-
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (ProtocolException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return csrfToken;
-    }
-
 
 
     public String getAuthToken() {
