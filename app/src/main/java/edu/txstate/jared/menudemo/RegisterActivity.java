@@ -1,10 +1,6 @@
 package edu.txstate.jared.menudemo;
 
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.SharedPreferences;
-import android.os.AsyncTask;
-import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -70,7 +66,7 @@ public class RegisterActivity extends AppCompatActivity implements AsyncAuth.Asy
             json.put("password1", pwdField.getText().toString());
             json.put("password2", pwdField.getText().toString());
 
-            AsyncAuth authTask = new AsyncAuth(this, this, User.REGISTER);
+            AsyncAuth authTask = new AsyncAuth(this, this, AsyncAuth.REGISTER);
             authTask.execute(json);
 
         } catch (JSONException e) {

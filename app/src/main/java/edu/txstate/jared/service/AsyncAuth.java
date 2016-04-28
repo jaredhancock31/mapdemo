@@ -25,6 +25,12 @@ import okhttp3.Response;
 public class AsyncAuth extends AsyncTask<JSONObject, Void, Boolean> {
 
     public static final String TAG =            "AUTH";
+
+    // Publicly accessible variables that correspond to auth types
+    public static final int REGISTER =                  0;
+    public static final int LOGIN =                     1;
+    public static final int LOGOUT =                    2;
+
     public AsyncResponse delegate =              null;
     public Boolean authSuccess;
     public int authAction;
@@ -60,10 +66,10 @@ public class AsyncAuth extends AsyncTask<JSONObject, Void, Boolean> {
      */
     @Override
     protected Boolean doInBackground(JSONObject... params) {
-        if (authAction == User.LOGIN) {
+        if (authAction == LOGIN) {
             return login(params[0]);
         }
-        else if (authAction == User.REGISTER) {
+        else if (authAction == REGISTER) {
             return register(params[0]);
         }
         else {

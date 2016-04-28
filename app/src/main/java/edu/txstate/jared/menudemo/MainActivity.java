@@ -2,7 +2,6 @@ package edu.txstate.jared.menudemo;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -11,10 +10,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.preference.PreferenceManager;
-
-import com.google.android.gms.appindexing.Action;
-import com.google.android.gms.appindexing.AppIndex;
-import com.google.android.gms.common.api.GoogleApiClient;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -107,7 +102,7 @@ public class MainActivity extends AppCompatActivity implements AsyncAuth.AsyncRe
             JSONObject json = new JSONObject();
             json.put("token", token);
 
-            AsyncAuth authTask = new AsyncAuth(this, this, User.LOGOUT);
+            AsyncAuth authTask = new AsyncAuth(this, this, AsyncAuth.LOGOUT);
             authTask.execute(json);
 
         } catch (JSONException e) {

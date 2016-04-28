@@ -1,10 +1,6 @@
 package edu.txstate.jared.menudemo;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.os.StrictMode;
-import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,21 +13,7 @@ import android.widget.TextView;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.net.CookieHandler;
-import java.net.CookieManager;
-import java.net.CookiePolicy;
-import java.net.CookieStore;
-import java.net.HttpCookie;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLEncoder;
-import java.util.List;
 
 import edu.txstate.jared.service.AsyncAuth;
 
@@ -91,7 +73,7 @@ public class LoginActivity extends AppCompatActivity implements AsyncAuth.AsyncR
             json.put("email", emailField.getText().toString());
             json.put("password", pwdField.getText().toString());
 
-            AsyncAuth authTask = new AsyncAuth(this, this, User.LOGIN);
+            AsyncAuth authTask = new AsyncAuth(this, this, AsyncAuth.LOGIN);
             authTask.execute(json);
 
         } catch (JSONException e) {
