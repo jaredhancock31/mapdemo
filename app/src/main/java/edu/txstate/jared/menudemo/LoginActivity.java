@@ -85,7 +85,7 @@ public class LoginActivity extends AppCompatActivity implements AsyncAuth.AsyncR
 
         // get username from settings
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
-        String username = settings.getString(User.USERNAME, "asdf");
+        String username = settings.getString(User.USERNAME, "tester1");
 
         try {
             JSONObject json = new JSONObject();

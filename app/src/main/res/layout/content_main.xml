@@ -10,7 +10,7 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="edu.txstate.jared.temp1.MainActivity"
-    android:background="#d2313e"><![CDATA[
+    android:background="#a50d05"><![CDATA[
     tools:showIn="@layout/activity_main">
 
     ]]>

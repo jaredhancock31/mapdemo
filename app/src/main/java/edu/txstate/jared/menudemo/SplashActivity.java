@@ -21,8 +21,8 @@ public class SplashActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        String username = settings.getString(User.USERNAME, "jared");
-        String token= settings.getString(User.AUTH_TOKEN, "no token");
+        String username = settings.getString(User.USERNAME, "tester");
+        String token= settings.getString(User.AUTH_TOKEN, "no_token");
         Log.d(TAG, username);
         Log.d(TAG, token);
 

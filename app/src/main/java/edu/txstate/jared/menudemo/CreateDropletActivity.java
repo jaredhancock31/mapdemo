@@ -13,6 +13,8 @@ import edu.txstate.jared.service.PostService;
 
 public class CreateDropletActivity extends AppCompatActivity {
 
+    public static final String TAG = "CREATE_DROPLET_ACTIVITY";
+
     private EditText usernameField;
     private EditText messageField;
     private Button submitButton;
@@ -20,6 +22,7 @@ public class CreateDropletActivity extends AppCompatActivity {
     private Double longitude = 0.0;
 
     private Intent postServiceIntent;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,7 +33,7 @@ public class CreateDropletActivity extends AppCompatActivity {
         latitude = intent.getDoubleExtra(Droplet.LATITUDE, 0);
         longitude = intent.getDoubleExtra(Droplet.LONGITUDE, 0);
 
-        usernameField = (EditText) findViewById(R.id.usernameForm);
+//        usernameField = (EditText) findViewById(R.id.usernameForm);
         messageField = (EditText) findViewById(R.id.messageForm);
         submitButton = (Button) findViewById(R.id.submitButton);
         submitButton.setOnClickListener(new View.OnClickListener() {
@@ -48,16 +51,16 @@ public class CreateDropletActivity extends AppCompatActivity {
      * @param v
      */
     private void prepareDroplet(View v) {
-        String username = usernameField.getText().toString();
+//        String username = usernameField.getText().toString();
         String message = messageField.getText().toString();
-        Droplet droplet = new Droplet(username, latitude, longitude, message);
+//        Droplet droplet = new Droplet(username, latitude, longitude, message);
 
         postServiceIntent = new Intent(getApplicationContext(), PostService.class);
         postServiceIntent.putExtra(PostService.METHOD_EXTRA, PostService.METHOD_POST);
         postServiceIntent.putExtra(PostService.LATITUDE_EXTRA, String.valueOf(latitude));
         postServiceIntent.putExtra(PostService.LONGITUDE_EXTRA, String.valueOf(longitude));
         postServiceIntent.putExtra(PostService.DATA_EXTRA, message);
-        postServiceIntent.putExtra(PostService.JSON_EXTRA, String.valueOf(droplet.toJSONObject()));
+//        postServiceIntent.putExtra(PostService.JSON_EXTRA, String.valueOf(droplet.toJSONObject()));
 
         startService(postServiceIntent);        // start up the POST request service
 

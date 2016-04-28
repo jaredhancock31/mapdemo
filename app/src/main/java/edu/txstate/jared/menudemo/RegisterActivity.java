@@ -60,7 +60,7 @@ public class RegisterActivity extends AppCompatActivity implements AsyncAuth.Asy
         //DEBUG
 //        SharedPreferences settings = getApplicationContext().getSharedPreferences("geoPrefs", 0);
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        String username = settings.getString(User.USERNAME, "asdf");
+        String username = settings.getString(User.USERNAME, "tester1");
         Log.d(TAG, username);
     }
 

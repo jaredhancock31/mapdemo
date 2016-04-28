@@ -69,63 +69,58 @@ public class PostService extends IntentService {
         mOriginalRequestIntent = requestIntent;
 
         // get request data from intent
-        String method = requestIntent.getStringExtra(METHOD_EXTRA);
+//        String method = requestIntent.getStringExtra(METHOD_EXTRA);
         String latitude = requestIntent.getStringExtra(LATITUDE_EXTRA);
         String longitude = requestIntent.getStringExtra(LONGITUDE_EXTRA);
         String data = requestIntent.getStringExtra(DATA_EXTRA);
-//        String droplet = requestIntent.getStringExtra(JSON_EXTRA);      //droplet formatted as JSON
 
-        switch (method) {
+        /* send POST request to the server */
+        try {
+            Log.d(TAG, "starting POST request");
 
-            /* send POST request to the server */
-            case METHOD_POST:
-                try {
-                    Log.d(TAG, "starting POST request");
-
-                    JSONObject json = new JSONObject();
+            JSONObject json = new JSONObject();
 //                    json.put(Droplet.OWNER, "Jared");
-                    json.put(Droplet.LATITUDE, latitude);
-                    json.put(Droplet.LONGITUDE, longitude);
-                    json.put(Droplet.DATA, data);
+            json.put(Droplet.LATITUDE, latitude);
+            json.put(Droplet.LONGITUDE, longitude);
+            json.put(Droplet.DATA, data);
 
-                    String token = getAuthToken();
+            String token = getAuthToken();
 
-                    OkHttpClient client = new OkHttpClient();
+            OkHttpClient client = new OkHttpClient();
 
-                    MediaType mediaType = MediaType.parse("application/json");
-                    RequestBody body = RequestBody.create(mediaType, json.toString());
-                    Request request = new Request.Builder()
-                            .url("http://104.236.181.178:8000/droplets/all/")
-                            .post(body)
-                            .addHeader("authorization", "Token " + token)
-                            .addHeader("content-type", "application/json")
-                            .addHeader("cache-control", "no-cache")
-                            .build();
+            MediaType mediaType = MediaType.parse("application/json");
+            RequestBody body = RequestBody.create(mediaType, json.toString());
+            Request request = new Request.Builder()
+                    .url("http://104.236.181.178:8000/droplets/all/")
+                    .post(body)
+                    .addHeader("authorization", "Token " + token)
+                    .addHeader("content-type", "application/json")
+                    .addHeader("cache-control", "no-cache")
+                    .build();
 
-                    Response response = client.newCall(request).execute();
-                    String responseBody = response.body().string();
+            Response response = client.newCall(request).execute();
+            String responseBody = response.body().string();
 
-                    Log.d(TAG, "response: " + response.message());
-                    Log.d(TAG, "response body: " + responseBody);
-                    
-                    /* uncomment this loop to log the headers */
+            Log.d(TAG, "response: " + response.message());
+            Log.d(TAG, "response body: " + responseBody);
+
+            /* uncomment this loop to log the headers */
 //            for (String header : response.headers().names()) {
 //                Log.d(TAG, response.header(header));
 //            }
-                    if (response.code() < 400) {
-                        // do stuff
-                    }
+            if (response.code() < 400) {
+                // do stuff
+            }
 
 
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
-                } catch (ProtocolException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (ProtocolException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
     }
 

@@ -26,7 +26,6 @@ import okhttp3.internal.framed.Header;
 public class AsyncAuth extends AsyncTask<JSONObject, Void, Boolean> {
 
     public static final String TAG =            "AUTH";
-    public static final String TOKEN =          "TOKEN";
     public AsyncResponse delegate =              null;
     public Boolean authSuccess;
     public int authAction;
