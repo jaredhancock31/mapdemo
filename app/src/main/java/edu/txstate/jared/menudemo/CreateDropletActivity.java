@@ -33,7 +33,6 @@ public class CreateDropletActivity extends AppCompatActivity {
         latitude = intent.getDoubleExtra(Droplet.LATITUDE, 0);
         longitude = intent.getDoubleExtra(Droplet.LONGITUDE, 0);
 
-//        usernameField = (EditText) findViewById(R.id.usernameForm);
         messageField = (EditText) findViewById(R.id.messageForm);
         submitButton = (Button) findViewById(R.id.submitButton);
         submitButton.setOnClickListener(new View.OnClickListener() {
@@ -65,7 +64,11 @@ public class CreateDropletActivity extends AppCompatActivity {
         startService(postServiceIntent);        // start up the POST request service
 
         // TODO transition based on server response
-        Intent mainIntent = new Intent(getApplicationContext(), MainActivity.class);
+//        Intent mainIntent = new Intent(getApplicationContext(), MainActivity.class);
+//        startActivity(mainIntent);
+
+        // Go back to map.
+        Intent mainIntent = new Intent(getApplicationContext(), MapsActivity.class);
         startActivity(mainIntent);
 
 
