@@ -8,14 +8,13 @@ import android.util.Log;
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.io.IOException;
-import edu.txstate.jared.menudemo.R;
+
 import edu.txstate.jared.menudemo.User;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
 import okhttp3.Request;
 import okhttp3.Response;
-import okhttp3.internal.framed.Header;
 
 /**
  * This class is responsible for logging in or registering to the server and retrieving the
@@ -107,7 +106,8 @@ public class AsyncAuth extends AsyncTask<JSONObject, Void, Boolean> {
             if (response.code() < 400) {
                 JSONObject jsonResponse = new JSONObject(responseBody);
                 if (jsonResponse.has("key")) {
-                    saveAuthToken(jsonResponse.getString("key"));
+                    saveUserInfo(jsonResponse.getString("key"), params.getString("username"),
+                            params.getString("email"));
                     authSuccess = true;
                 }
                 else {
@@ -157,7 +157,8 @@ public class AsyncAuth extends AsyncTask<JSONObject, Void, Boolean> {
             if (response.code() < 400) {
                 JSONObject jsonResponse = new JSONObject(responseBody);
                 if (jsonResponse.has("key")) {
-                    saveAuthToken(jsonResponse.getString("key"));
+                    saveUserInfo(jsonResponse.getString("key"), params.getString("username"),
+                            params.getString("email"));
                     authSuccess = true;
                 }
                 else {
@@ -205,6 +206,7 @@ public class AsyncAuth extends AsyncTask<JSONObject, Void, Boolean> {
             if (response.code() < 400) {
                 JSONObject jsonResponse = new JSONObject(responseBody);
                 Log.d(TAG, "response: " + String.valueOf(jsonResponse));
+                deleteUserInfo();
                 authSuccess = true;
             }
         } catch (JSONException e) {
@@ -215,9 +217,24 @@ public class AsyncAuth extends AsyncTask<JSONObject, Void, Boolean> {
         return authSuccess;
     }
 
-    public void saveAuthToken(String token) {
+    /*
+    Save user's auth token, username, and email in SharedPreferences.
+     */
+    public void saveUserInfo(String token, String username, String email) {
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
         settings.edit().putString(User.AUTH_TOKEN, token).apply();
+        settings.edit().putString(User.USERNAME, username).apply();
+        settings.edit().putString(User.EMAIL, email).apply();
+    }
+
+    public void deleteUserInfo() {
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
+        if (settings.contains(User.AUTH_TOKEN))
+            settings.edit().remove(User.AUTH_TOKEN).apply();
+        if (settings.contains(User.USERNAME))
+            settings.edit().remove(User.USERNAME).apply();
+        if (settings.contains(User.EMAIL))
+            settings.edit().remove(User.EMAIL).apply();
     }
 
 }

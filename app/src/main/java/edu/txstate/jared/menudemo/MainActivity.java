@@ -31,11 +31,6 @@ public class MainActivity extends AppCompatActivity implements AsyncAuth.AsyncRe
     public Button gotoProfileButton;
 
     public static final String TAG = "MAINACTIVITY";
-    /**
-     * ATTENTION: This was auto-generated to implement the App Indexing API.
-     * See https://g.co/AppIndexing/AndroidStudio for more information.
-     */
-    private GoogleApiClient client;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,20 +68,16 @@ public class MainActivity extends AppCompatActivity implements AsyncAuth.AsyncRe
             }
         });
 
-        //DEBUG
-//        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-//        SharedPreferences.Editor editor = settings.edit();
-//        editor.putString("username", "doofus");
-//        editor.commit();
 
-//        SharedPreferences settings = getApplicationContext().getSharedPreferences("geoPrefs", 0);
-//        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        //DEBUG
+        //TODO: remove
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        String username = settings.getString(User.USERNAME, "asdf");
+        String username = settings.getString(User.USERNAME, "no_username");
         Log.d(TAG, username);
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
+        String token = settings.getString(User.AUTH_TOKEN, "no_token");
+        Log.d(TAG, username);
+        String email = settings.getString(User.EMAIL, "no_email");
+        Log.d(TAG, email);
     }
 
     @Override
@@ -119,7 +110,7 @@ public class MainActivity extends AppCompatActivity implements AsyncAuth.AsyncRe
     private void attemptLogout(View view) throws IOException {
         Log.d(TAG, "logging out");
 
-        // get username from settings
+        // get auth token from settings
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
         String token = settings.getString(User.AUTH_TOKEN, "no_token");
 

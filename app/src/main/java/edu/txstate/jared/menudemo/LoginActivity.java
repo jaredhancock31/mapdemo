@@ -40,6 +40,7 @@ public class LoginActivity extends AppCompatActivity implements AsyncAuth.AsyncR
     public static final String TAG = "LOGINACTIVITY";
 
     private Button loginButton;
+    private EditText usernameField;
     private EditText emailField;
     private EditText pwdField;
     private TextView linktoRegister;
@@ -50,6 +51,7 @@ public class LoginActivity extends AppCompatActivity implements AsyncAuth.AsyncR
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        usernameField = (EditText) findViewById(R.id.usernameField);
         emailField = (EditText) findViewById(R.id.emailField);
         pwdField = (EditText) findViewById(R.id.pwdField1);
         loginButton = (Button) findViewById(R.id.loginButton);
@@ -73,6 +75,16 @@ public class LoginActivity extends AppCompatActivity implements AsyncAuth.AsyncR
                 finish();
             }
         });
+
+        //DEBUG
+        //TODO: remove
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        String username = settings.getString(User.USERNAME, "no_username");
+        Log.d(TAG, username);
+        String token = settings.getString(User.AUTH_TOKEN, "no_token");
+        Log.d(TAG, username);
+        String email = settings.getString(User.EMAIL, "no_email");
+        Log.d(TAG, email);
     }
 
 
@@ -83,13 +95,9 @@ public class LoginActivity extends AppCompatActivity implements AsyncAuth.AsyncR
     private void attemptLogin(View view) throws IOException {
         Log.d(TAG, "logging in");
 
-        // get username from settings
-        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
-        String username = settings.getString(User.USERNAME, "tester1");
-
         try {
             JSONObject json = new JSONObject();
-            json.put("username", username);
+            json.put("username", usernameField.getText().toString());
             json.put("email", emailField.getText().toString());
             json.put("password", pwdField.getText().toString());
 
