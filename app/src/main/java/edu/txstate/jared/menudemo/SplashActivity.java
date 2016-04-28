@@ -20,16 +20,18 @@ public class SplashActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // Check if user is logged in.
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        String username = settings.getString(User.USERNAME, "tester");
-        String token= settings.getString(User.AUTH_TOKEN, "no_token");
-        Log.d(TAG, username);
-        Log.d(TAG, token);
-
-
-
-        Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-        startActivity(intent);
-        finish();
+        if (settings.contains(User.AUTH_TOKEN) && settings.contains(User.USERNAME)
+                && settings.contains(User.EMAIL)) { // User is logged in. Go to main activity.
+            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+            startActivity(intent);
+            finish();
+        }
+        else { // User is not logged in. Go to login screen.
+            Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+            startActivity(intent);
+            finish();
+        }
     }
 }
