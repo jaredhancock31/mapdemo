@@ -217,8 +217,11 @@ public class AsyncAuth extends AsyncTask<JSONObject, Void, Boolean> {
         return authSuccess;
     }
 
-    /*
-    Save user's auth token, username, and email in SharedPreferences.
+    /**
+     * Save logged-in user's info in SharedPreferences
+     * @param token Auth token received from server on successful login/register
+     * @param username Username of logged-in user
+     * @param email Logged-in user's email address
      */
     public void saveUserInfo(String token, String username, String email) {
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
@@ -227,6 +230,10 @@ public class AsyncAuth extends AsyncTask<JSONObject, Void, Boolean> {
         settings.edit().putString(User.EMAIL, email).apply();
     }
 
+    /**
+     * Delete logged-in user's info from SharedPreferences.
+     * Called on user logout.
+     */
     public void deleteUserInfo() {
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
         if (settings.contains(User.AUTH_TOKEN))

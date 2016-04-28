@@ -117,6 +117,16 @@ public class MapsActivity extends FragmentActivity
         Log.d(TAG, username);
     }
 
+    /**
+     * Overrides the back button to always go to MainActivity.
+     */
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
 
     public void setupBroadcasting() {
         mMessageReceiver = new BroadcastReceiver() {
