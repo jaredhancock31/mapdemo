@@ -2,6 +2,8 @@ package edu.txstate.jared.menudemo;
 
 /**
  * Created by jared on 4/26/16.
+ *
+ * Holds global constants.
  */
 public abstract class User {
 

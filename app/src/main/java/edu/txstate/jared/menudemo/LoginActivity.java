@@ -75,16 +75,6 @@ public class LoginActivity extends AppCompatActivity implements AsyncAuth.AsyncR
                 finish();
             }
         });
-
-        //DEBUG
-        //TODO: remove
-        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        String username = settings.getString(User.USERNAME, "no_username");
-        Log.d(TAG, username);
-        String token = settings.getString(User.AUTH_TOKEN, "no_token");
-        Log.d(TAG, username);
-        String email = settings.getString(User.EMAIL, "no_email");
-        Log.d(TAG, email);
     }
 
 
