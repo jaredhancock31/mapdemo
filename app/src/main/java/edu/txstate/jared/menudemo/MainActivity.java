@@ -46,6 +46,8 @@ public class MainActivity extends AppCompatActivity implements AsyncAuth.AsyncRe
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "Profile button clicked.");
+                Intent intent = new Intent(getApplicationContext(), ProfileActivity.class);
+                startActivity(intent);
             }
         });
 
