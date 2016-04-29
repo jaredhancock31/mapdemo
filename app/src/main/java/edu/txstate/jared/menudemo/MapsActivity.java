@@ -46,7 +46,6 @@ import static com.google.android.gms.location.LocationServices.API;
  * By extending the FragmentActivity, we don't use the traditional fragment loader used in this
  * example: https://developers.google.com/maps/documentation/android-api/map.
  */
-
 public class MapsActivity extends FragmentActivity
         implements
         OnMapReadyCallback,
@@ -113,7 +112,7 @@ public class MapsActivity extends FragmentActivity
     }
 
     /**
-     * Overrides the back button to always go to MainActivity.
+     * Overrides the back button to always go to MainActivity when pressed in MapsActivity.
      */
     @Override
     public void onBackPressed() {
@@ -123,6 +122,9 @@ public class MapsActivity extends FragmentActivity
     }
 
 
+    /**
+     * Listens for new Droplets sent from server.
+     */
     public void setupBroadcasting() {
         mMessageReceiver = new BroadcastReceiver() {
             @Override
@@ -138,6 +140,10 @@ public class MapsActivity extends FragmentActivity
     }
 
 
+    /**
+     * Places new Droplets on the map.
+     * @param droplets Droplet objects to place on map
+     */
     public void updateMap(ArrayList<Droplet> droplets) {
         Log.d(TAG, "updating map");
         if (!droplets.isEmpty()) {
@@ -183,13 +189,18 @@ public class MapsActivity extends FragmentActivity
     }
 
 
+    /**
+     * Ends periodic location updates.
+     */
     public void stopLocationUpdates() {
         if(mGoogleApiClient.isConnected())
             LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, mRequestLocationUpdatesPendingIntent);
     }
 
 
-
+    /**
+     * Begins period location updates.
+     */
     protected void createLocationRequest() {
         mRequestingLocationUpdates = true;
         mLocationRequest = new LocationRequest();
@@ -205,11 +216,17 @@ public class MapsActivity extends FragmentActivity
     }
 
 
+    /**
+     * Connects the Google API client.
+     */
     protected void onStart() {
         mGoogleApiClient.connect();
         super.onStart();
     }
 
+    /**
+     * Ceases location updates when Activity is stopped.
+     */
     protected void onStop() {
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
         stopLocationUpdates();
@@ -245,7 +262,10 @@ public class MapsActivity extends FragmentActivity
     }
 
 
-
+    /**
+     * Handle location updates.
+     * @param savedInstanceState
+     */
     private void updateValuesFromBundle(Bundle savedInstanceState) {
         Log.i(TAG, "Updating values from bundle");
         if (savedInstanceState != null) {

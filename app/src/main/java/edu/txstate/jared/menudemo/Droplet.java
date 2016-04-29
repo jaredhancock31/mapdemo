@@ -12,6 +12,7 @@ import java.util.HashMap;
 
 /**
  * Created by jared on 2/28/16.
+ * A data structure reopresenting a message submitted by a user.
  */
 public class Droplet implements Parcelable {
 
@@ -28,13 +29,18 @@ public class Droplet implements Parcelable {
     private double longitude;
     private String data;
 
-    /* constructor */
+    /**
+     * Constructor.
+     * @param owner User who submitted the Droplet.
+     * @param latitude Latitude at which the user submitted the Droplet.
+     * @param longitude Longitude at which the user submitted the Droplet.
+     * @param data User-created message included with the Droplet.
+     */
     public Droplet(String owner, double latitude, double longitude, String data) {
         this.owner = owner;
         this.latitude = latitude;
         this.longitude = longitude;
         this.data = data;
-
     }
 
 
@@ -56,30 +62,46 @@ public class Droplet implements Parcelable {
     }
 
 
+    /**
+     * Creates a string that represents that Droplet's data as a URL query for a POST request.
+     * @return Droplet data as URL query string.
+     */
     public String getParamString() {
         String params = "owner=" + owner;
         params += "&latitude=" + Double.toString(latitude);
         params += "&longitude=" + Double.toString(longitude);
         params += "&data=" + data;
         return params;
-
     }
 
-
-
-
+    /**
+     * Getter for lattitude attribute.
+     * @return Droplet's latitude attribute.
+     */
     public double getLatitude() {
         return latitude;
     }
 
+    /**
+     * Getter for longitude attribute.
+     * @return Droplet's longitude attribute.
+     */
     public double getLongitude() {
         return longitude;
     }
 
+    /**
+     * Getter for Droplet's user-created message.
+     * @return Droplet's data attribute.
+     */
     public String getData() {
         return data;
     }
 
+    /**
+     * Getter for Droplet's owner attribute.
+     * @return Username of Droplet's owner.
+     */
     public String getOwner() {
         return owner;
     }
@@ -97,6 +119,10 @@ public class Droplet implements Parcelable {
         dest.writeString(this.data);
     }
 
+    /**
+     * Constructs Droplet object from Parcel.
+     * @param in Parcel to create Droplet from.
+     */
     protected Droplet(Parcel in) {
         this.owner = in.readString();
         this.latitude = in.readDouble();

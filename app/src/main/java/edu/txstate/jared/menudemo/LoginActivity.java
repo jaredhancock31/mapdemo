@@ -17,6 +17,9 @@ import java.io.IOException;
 
 import edu.txstate.jared.service.AsyncAuth;
 
+/**
+ * Activity for logging in.
+ */
 public class LoginActivity extends AppCompatActivity implements AsyncAuth.AsyncResponse{
 
     public static final String TAG = "LOGINACTIVITY";
@@ -82,6 +85,10 @@ public class LoginActivity extends AppCompatActivity implements AsyncAuth.AsyncR
     }
 
 
+    /**
+     * Determines if user input is valid
+     * @return True if valid, else false
+     */
     private boolean validate() {
         boolean valid = true;
         String email = emailField.getText().toString();
@@ -101,6 +108,11 @@ public class LoginActivity extends AppCompatActivity implements AsyncAuth.AsyncR
     }
 
 
+    /**
+     * Called automatically after AsyncAuth completes. Processes the result of AsyncAuth.
+     * @param success The result returned by AsyncAuth. True if login POST request to server
+     *                was successful, else false.
+     */
     @Override
     public void processResult(boolean success) {
         if (success) {

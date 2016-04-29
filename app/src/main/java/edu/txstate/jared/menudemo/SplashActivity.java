@@ -16,6 +16,10 @@ public class SplashActivity extends AppCompatActivity {
 
     public static final String TAG = "SPLASHACTIVITY";
 
+    /**
+     * Transitions to MainActivity if user is already logged in, else transitions to LoginActivity.
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

@@ -3,7 +3,7 @@ package edu.txstate.jared.menudemo;
 /**
  * Created by jared on 4/26/16.
  *
- * Holds global constants.
+ * Holds global constants corresponding to User information types.
  */
 public abstract class User {
 

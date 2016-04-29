@@ -15,6 +15,10 @@ import java.util.ArrayList;
 
 import edu.txstate.jared.service.AsyncDropletQuery;
 
+/**
+ * Activity that displays the user's profile. Displays the logged-in user's username, email, and a
+ * list of Droplets they created.
+ */
 public class ProfileActivity extends AppCompatActivity implements AsyncDropletQuery.AsyncResponse {
 
     public TextView usernameText;
@@ -26,6 +30,10 @@ public class ProfileActivity extends AppCompatActivity implements AsyncDropletQu
 
     private static final String TAG = "PROFILEACTIVITY";
 
+    /**
+     * Initiates the process of populating the profile with the user's Droplets.
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,6 +61,11 @@ public class ProfileActivity extends AppCompatActivity implements AsyncDropletQu
         queryTask.execute();
     }
 
+    /**
+     * Automatically called when AsyncDropletQuery completes. Populates the profile with the
+     * user's Droplets.
+     * @param result Collection of Droplets returned by AsyncDropletQuery
+     */
     @Override
     public void processResult(ArrayList<Droplet> result) {
         Log.d(TAG, "Finished executing droplet query.");

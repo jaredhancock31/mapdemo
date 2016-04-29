@@ -15,6 +15,9 @@ import org.json.JSONObject;
 
 import edu.txstate.jared.service.AsyncAuth;
 
+/**
+ * Activity that allows the user to create an account.
+ */
 public class RegisterActivity extends AppCompatActivity implements AsyncAuth.AsyncResponse {
 
     public static final String TAG =                    "REGISTERACTIVITY";
@@ -55,6 +58,10 @@ public class RegisterActivity extends AppCompatActivity implements AsyncAuth.Asy
     }
 
 
+    /**
+     * Sends user's input to the server for account creation.
+     * @param view
+     */
     // TODO make 2nd pwd field and validate everything
     private void attemptRegister(View view) {
         Log.d(TAG, "starting authTask");
@@ -75,6 +82,10 @@ public class RegisterActivity extends AppCompatActivity implements AsyncAuth.Asy
     }
 
 
+    /**
+     * Validates user input.
+     * @return True if input is valid, else false.
+     */
     private boolean validate() {
         Log.d(TAG, "validating entries");
         boolean valid = true;

@@ -11,11 +11,13 @@ import org.json.JSONObject;
 
 import edu.txstate.jared.service.PostService;
 
+/**
+ * Activity for creating data drops. Gives the user a field to enter a message and a button to submit.
+ */
 public class CreateDropletActivity extends AppCompatActivity {
 
     public static final String TAG = "CREATE_DROPLET_ACTIVITY";
 
-    private EditText usernameField;
     private EditText messageField;
     private Button submitButton;
     private Double latitude = 0.0;
@@ -46,26 +48,22 @@ public class CreateDropletActivity extends AppCompatActivity {
 
 
     /**
-     *
+     * Passes a droplet to PostService to be submitted to the server, then transitions to
+     * MapsActivity.
      * @param v
      */
     private void prepareDroplet(View v) {
-//        String username = usernameField.getText().toString();
         String message = messageField.getText().toString();
-//        Droplet droplet = new Droplet(username, latitude, longitude, message);
 
         postServiceIntent = new Intent(getApplicationContext(), PostService.class);
         postServiceIntent.putExtra(PostService.METHOD_EXTRA, PostService.METHOD_POST);
         postServiceIntent.putExtra(PostService.LATITUDE_EXTRA, String.valueOf(latitude));
         postServiceIntent.putExtra(PostService.LONGITUDE_EXTRA, String.valueOf(longitude));
         postServiceIntent.putExtra(PostService.DATA_EXTRA, message);
-//        postServiceIntent.putExtra(PostService.JSON_EXTRA, String.valueOf(droplet.toJSONObject()));
 
         startService(postServiceIntent);        // start up the POST request service
 
         // TODO transition based on server response
-//        Intent mainIntent = new Intent(getApplicationContext(), MainActivity.class);
-//        startActivity(mainIntent);
 
         // Go back to map.
         Intent mainIntent = new Intent(getApplicationContext(), MapsActivity.class);

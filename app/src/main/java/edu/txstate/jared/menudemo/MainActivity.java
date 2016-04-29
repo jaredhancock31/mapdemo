@@ -19,6 +19,9 @@ import java.io.IOException;
 import edu.txstate.jared.service.AsyncAuth;
 
 
+/**
+ * Main menu activity. Gives user options to go to the map, view their profile, or log out.
+ */
 public class MainActivity extends AppCompatActivity implements AsyncAuth.AsyncResponse {
 
     public Button gotoMapButton;
@@ -93,6 +96,11 @@ public class MainActivity extends AppCompatActivity implements AsyncAuth.AsyncRe
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * Initiates the logout process.
+     * @param view
+     * @throws IOException
+     */
     private void attemptLogout(View view) throws IOException {
         Log.d(TAG, "logging out");
 
@@ -112,6 +120,10 @@ public class MainActivity extends AppCompatActivity implements AsyncAuth.AsyncRe
         }
     }
 
+    /**
+     * Automatically called when AsyncAuth completes. Transitions to LoginActivity on success.
+     * @param success Returned by AsyncAuth on completion.
+     */
     @Override
     public void processResult(boolean success) {
         if (success) {
