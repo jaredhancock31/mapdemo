@@ -27,4 +27,5 @@
     <string name="logoutButtonText">Log Out</string>
     <string name="profileUsername">Username</string>
     <string name="profileEmail">Email</string>
+    <string name="dropletListLabel">Droplets:</string>
 </resources>

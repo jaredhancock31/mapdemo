@@ -55,8 +55,7 @@ public class ProfileActivity extends AppCompatActivity implements AsyncDropletQu
 
     @Override
     public void processResult(ArrayList<Droplet> result) {
-        for (int i = 0; i < result.size(); ++i)
-            Log.d(TAG, "processResult data: " + result.get(i).getData());
+        Log.d(TAG, "Finished executing droplet query.");
         if (result != null) {
             int size = result.size();
             for (int i = 0; i < size; ++i) {

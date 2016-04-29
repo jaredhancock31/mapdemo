@@ -110,11 +110,6 @@ public class MapsActivity extends FragmentActivity
         });
         // update vals using data stored in the Bundle
         updateValuesFromBundle(savedInstanceState);
-
-        //DEBUG
-        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        String username = settings.getString(User.USERNAME, "jared");
-        Log.d(TAG, username);
     }
 
     /**

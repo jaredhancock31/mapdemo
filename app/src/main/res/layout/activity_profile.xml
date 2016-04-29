@@ -32,7 +32,18 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/profileDropListView"
+        android:layout_below="@+id/dropletListLabel"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/dropletListLabel"
+        android:id="@+id/dropletListLabel"
+        android:textColor="#f4f4f4"
+        android:textSize="14pt"
         android:layout_below="@+id/profileEmail"
-        android:layout_alignStart="@+id/profileEmail" />
+        android:layout_alignParentStart="true"
+        android:paddingTop="15dp" />
 
 </RelativeLayout>

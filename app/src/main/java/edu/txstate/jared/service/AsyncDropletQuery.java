@@ -80,8 +80,6 @@ public class AsyncDropletQuery extends AsyncTask<Void, Void, ArrayList<Droplet>>
 
             // Parse response string into an ArrayList of Droplet objects
             droplets = parseJSON(responseBody);
-            for (int i = 0; i < droplets.size(); ++i)
-                Log.d(TAG, "Parsed data: " + droplets.get(i).getData());
 
             /* uncomment this loop to log the headers */
 //            for (String header : response.headers().names()) {
@@ -107,8 +105,6 @@ public class AsyncDropletQuery extends AsyncTask<Void, Void, ArrayList<Droplet>>
 
     @Override
     protected void onPostExecute(ArrayList<Droplet> result) {
-        for (int i = 0; i < result.size(); ++i)
-            Log.d(TAG, "onPostExecute data: " + result.get(i).getData());
         delegate.processResult(result);
     }
 
@@ -119,7 +115,6 @@ public class AsyncDropletQuery extends AsyncTask<Void, Void, ArrayList<Droplet>>
      * @throws JSONException
      */
     public ArrayList<Droplet> parseJSON(String response) throws JSONException {
-        Log.d(TAG, "Begin parsing JSON");
         JSONArray jsonArray = new JSONArray(response);
         ArrayList<Droplet> dropList = new ArrayList<>();     // pass this to Map to be drawn
 
@@ -129,7 +124,6 @@ public class AsyncDropletQuery extends AsyncTask<Void, Void, ArrayList<Droplet>>
             Double latitude = json.getDouble(Droplet.LATITUDE);
             Double longitude = json.getDouble(Droplet.LONGITUDE);
             String data = json.getString(Droplet.DATA);
-            Log.d(TAG, "Data: " + data);
 
             /* create found droplet instance and add to list */
             Droplet droplet = new Droplet(owner, latitude, longitude, data);
