@@ -37,6 +37,10 @@ public class AsyncAuth extends AsyncTask<JSONObject, Void, Boolean> {
     public Context context;
 
 
+    /**
+     * Interface for handling the result of an AsyncAuth object. Implemented in classes that
+     * use AsyncAuth objects.
+     */
     public interface AsyncResponse {
         void processResult(boolean success);
     }
@@ -78,12 +82,21 @@ public class AsyncAuth extends AsyncTask<JSONObject, Void, Boolean> {
     }
 
 
+    /**
+     * Passes the result to the class that executed this AsyncAuth.
+     * @param result True if POST request to server was successful, else false.
+     */
     @Override
     protected void onPostExecute(Boolean result) {
         delegate.processResult(result);
     }
 
 
+    /**
+     * Sends user information to server for account creation
+     * @param params Username, email, and password provided by user
+     * @return True if POST request succeeds, else false
+     */
     public Boolean register(JSONObject params) {
         try {
             OkHttpClient client = new OkHttpClient();

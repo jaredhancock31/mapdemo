@@ -50,6 +50,11 @@ public class AsyncDropletQuery extends AsyncTask<Void, Void, ArrayList<Droplet>>
         this.delegate = delegate;
     }
 
+    /**
+     * Sends GET request to server for Droplets created by the logged-in user.
+     * @param Params Parameters are passed in as Void objects. This function does not use parameters.
+     * @return Collection of Droplets created by the logged-in user.
+     */
     @Override
     protected ArrayList<Droplet> doInBackground(Void... Params) {
         ArrayList<Droplet> droplets = null;
@@ -103,6 +108,10 @@ public class AsyncDropletQuery extends AsyncTask<Void, Void, ArrayList<Droplet>>
         return droplets;
     }
 
+    /**
+     * Passes the obtained Droplets to the object that executed this AsyncDropletQuery.
+     * @param result Collection of Droplets created by the logged-in user.
+     */
     @Override
     protected void onPostExecute(ArrayList<Droplet> result) {
         delegate.processResult(result);

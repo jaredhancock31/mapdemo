@@ -47,6 +47,10 @@ public class DropletQueryService extends IntentService {
     }
 
 
+    /**
+     * Requests all Dropblets in proximity to the logged-in user from the server.
+     * @param requestIntent
+     */
     @Override
     protected void onHandleIntent(Intent requestIntent) {
         Log.d(TAG, "onHandleIntent");
@@ -108,6 +112,12 @@ public class DropletQueryService extends IntentService {
     }
 
 
+    /**
+     * Parses a string in JSON format into a collection of Droplet objects.
+     * @param response String representing a JSON array
+     * @return Collection of Droplet objects
+     * @throws JSONException
+     */
     public ArrayList<Droplet> parseJSON(String response) throws JSONException {
         JSONArray jsonArray = new JSONArray(response);
         ArrayList<Droplet> dropList = new ArrayList<Droplet>();     // pass this to Map to be drawn
@@ -127,6 +137,10 @@ public class DropletQueryService extends IntentService {
     }
 
 
+    /**
+     * Broadcasts the Droplets obtained from the server to the MapsActivity.
+     * @param bundle
+     */
     public void broadcastResults(Bundle bundle) {
         Log.d(TAG, "broadcasting results");
         Intent intent = new Intent(DROPLETS_FOUND);
@@ -135,6 +149,12 @@ public class DropletQueryService extends IntentService {
     }
 
 
+    /**
+     * Gets a CSRF token from the server to use in future POST requests. This function is not
+     * currently called, but may be used in the future if we implement CSRF token checking
+     * in our server
+     * @return CSRF token
+     */
     public String fetchCSRF() {
         String csrfToken = "";
         try {
