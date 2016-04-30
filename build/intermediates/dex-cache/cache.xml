@@ -1,2 +1,236 @@
 <?xml version="1.0" encoding="utf-8"?>
-<items version="2" />
+<items version="2" >
+
+    <item
+        jar="/Users/John2014/Documents/geoshare_final/app/build/intermediates/exploded-aar/com.google.android.gms/play-services-cast/8.4.0/jars/classes.jar"
+        jumboMode="false"
+        revision="23.0.2"
+        sha1="551e78f21acf69ebfb489c0e79647824c838013e">
+        <dex dex="/Users/John2014/Documents/geoshare_final/app/build/intermediates/pre-dexed/debug/com.google.android.gms-play-services-cast-8.4.0_e531e981132b2d317ea19c67e507825ddf201cd5.jar" />
+    </item>
+    <item
+        jar="/Users/John2014/Documents/geoshare_final/app/build/intermediates/exploded-aar/com.google.android.gms/play-services-base/8.4.0/jars/classes.jar"
+        jumboMode="false"
+        revision="23.0.2"
+        sha1="fef2b3e4b6b1b0e5fe7b69fa137a5fa55a3182ab">
+        <dex dex="/Users/John2014/Documents/geoshare_final/app/build/intermediates/pre-dexed/debug/com.google.android.gms-play-services-base-8.4.0_5e510c0faf4f19128d946618d4ffb0cfe1db353d.jar" />
+    </item>
+    <item
+        jar="/Users/John2014/Documents/geoshare_final/app/build/intermediates/exploded-aar/com.google.android.gms/play-services-games/8.4.0/jars/classes.jar"
+        jumboMode="false"
+        revision="23.0.2"
+        sha1="3a364cc6b698d1b3b2d284f64618daaa7fe77ddf">
+        <dex dex="/Users/John2014/Documents/geoshare_final/app/build/intermediates/pre-dexed/debug/com.google.android.gms-play-services-games-8.4.0_20ca22c80722336e3f7b5deec05b3cf8aeabb52c.jar" />
+    </item>
+    <item
+        jar="/Users/John2014/Documents/geoshare_final/app/build/intermediates/exploded-aar/com.google.android.gms/play-services-identity/8.4.0/jars/classes.jar"
+        jumboMode="false"
+        revision="23.0.2"
+        sha1="b82b8e847173c28efffcd291b2a0b1ae9ad17fa4">
+        <dex dex="/Users/John2014/Documents/geoshare_final/app/build/intermediates/pre-dexed/debug/com.google.android.gms-play-services-identity-8.4.0_32e6548b1242c4e41260e8efda5a84011bb5760b.jar" />
+    </item>
+    <item
+        jar="/Users/John2014/Documents/geoshare_final/app/build/intermediates/exploded-aar/com.google.android.gms/play-services-appinvite/8.4.0/jars/classes.jar"
+        jumboMode="false"
+        revision="23.0.2"
+        sha1="9fe026fb4c7fce21bc5142f6e1bdf844f28061ac">
+        <dex dex="/Users/John2014/Documents/geoshare_final/app/build/intermediates/pre-dexed/debug/com.google.android.gms-play-services-appinvite-8.4.0_5a84b30342154034b9f75a2341d00cf2be922099.jar" />
+    </item>
+    <item
+        jar="/Users/John2014/Documents/geoshare_final/app/build/intermediates/exploded-aar/com.google.android.gms/play-services-fitness/8.4.0/jars/classes.jar"
+        jumboMode="false"
+        revision="23.0.2"
+        sha1="c54246475c1bb64ac6857d1320364bfbfeda2c46">
+        <dex dex="/Users/John2014/Documents/geoshare_final/app/build/intermediates/pre-dexed/debug/com.google.android.gms-play-services-fitness-8.4.0_292562e9b93ad5ad7962a5f5ad7ccb0cccd2b9f2.jar" />
+    </item>
+    <item
+        jar="/Users/John2014/Documents/geoshare_final/app/build/intermediates/exploded-aar/com.android.support/support-v4/23.1.1/jars/libs/internal_impl-23.1.1.jar"
+        jumboMode="false"
+        revision="23.0.2"
+        sha1="a4de9c81ae239414e1ed0f86441b02abaf29bca9">
+        <dex dex="/Users/John2014/Documents/geoshare_final/app/build/intermediates/pre-dexed/debug/internal_impl-23.1.1_9a51df60778af34b13059457fed4e04c099c477d.jar" />
+    </item>
+    <item
+        jar="/Users/John2014/Documents/geoshare_final/app/build/intermediates/exploded-aar/com.google.android.gms/play-services-vision/8.4.0/jars/classes.jar"
+        jumboMode="false"
+        revision="23.0.2"
+        sha1="dfecc4d835cdabcdecf7e95f0d20a3ef1e9d8ef4">
+        <dex dex="/Users/John2014/Documents/geoshare_final/app/build/intermediates/pre-dexed/debug/com.google.android.gms-play-services-vision-8.4.0_a29c38bc8789946ea947ea0afb04a7eda05fbf0c.jar" />
+    </item>
+    <item
+        jar="/Users/John2014/Documents/geoshare_final/app/build/intermediates/exploded-aar/com.android.support/mediarouter-v7/23.0.0/jars/libs/internal_impl-23.0.0.jar"
+        jumboMode="false"
+        revision="23.0.2"
+        sha1="03d38bb042efe3e5ce27ba66b729a9523c36d8fe">
+        <dex dex="/Users/John2014/Documents/geoshare_final/app/build/intermediates/pre-dexed/debug/internal_impl-23.0.0_d23c918b9e67b8910f820a4bcfbfdfd55e2f670c.jar" />
+    </item>
+    <item
+        jar="/Users/John2014/Documents/geoshare_final/app/build/intermediates/exploded-aar/com.google.android.gms/play-services-nearby/8.4.0/jars/classes.jar"
+        jumboMode="false"
+        revision="23.0.2"
+        sha1="9cad249cf62751a323d9af568caf12284b7d6062">
+        <dex dex="/Users/John2014/Documents/geoshare_final/app/build/intermediates/pre-dexed/debug/com.google.android.gms-play-services-nearby-8.4.0_f0adbfbdbb8ab6615dc7121e404286cfb2c68fe5.jar" />
+    </item>
+    <item
+        jar="/Users/John2014/Documents/geoshare_final/app/build/intermediates/exploded-aar/com.google.android.gms/play-services-wearable/8.4.0/jars/classes.jar"
+        jumboMode="false"
+        revision="23.0.2"
+        sha1="e167a34eaca0b31704212f43f9576ea84e05046f">
+        <dex dex="/Users/John2014/Documents/geoshare_final/app/build/intermediates/pre-dexed/debug/com.google.android.gms-play-services-wearable-8.4.0_39094cc9c0d61069b4e1598b044aedd4d5c207f1.jar" />
+    </item>
+    <item
+        jar="/Users/John2014/Library/Android/sdk/extras/android/m2repository/com/android/support/support-annotations/23.1.1/support-annotations-23.1.1.jar"
+        jumboMode="false"
+        revision="23.0.2"
+        sha1="8d680ba5a623724d1fb0e81c36a790f023a6cede">
+        <dex dex="/Users/John2014/Documents/geoshare_final/app/build/intermediates/pre-dexed/debug/support-annotations-23.1.1_aa47bd582c202178277d4fdb0557aed947c0c359.jar" />
+    </item>
+    <item
+        jar="/Users/John2014/.gradle/caches/modules-2/files-2.1/com.squareup.okio/okio/1.6.0/98476622f10715998eacf9240d6b479f12c66143/okio-1.6.0.jar"
+        jumboMode="false"
+        revision="23.0.2"
+        sha1="98476622f10715998eacf9240d6b479f12c66143">
+        <dex dex="/Users/John2014/Documents/geoshare_final/app/build/intermediates/pre-dexed/debug/okio-1.6.0_a70a6b3ba88ec5f4f9ea98d1796f1b5d886935e1.jar" />
+    </item>
+    <item
+        jar="/Users/John2014/Documents/geoshare_final/app/build/intermediates/exploded-aar/com.google.android.gms/play-services-location/8.4.0/jars/classes.jar"
+        jumboMode="false"
+        revision="23.0.2"
+        sha1="a8412b654dab86d57bf90683367488211c8a81f1">
+        <dex dex="/Users/John2014/Documents/geoshare_final/app/build/intermediates/pre-dexed/debug/com.google.android.gms-play-services-location-8.4.0_4fe6a0e55d9b477041bac9a681f3fe3c696fbdaf.jar" />
+    </item>
+    <item
+        jar="/Users/John2014/Documents/geoshare_final/app/build/intermediates/exploded-aar/com.google.android.gms/play-services-drive/8.4.0/jars/classes.jar"
+        jumboMode="false"
+        revision="23.0.2"
+        sha1="b36f30ac5ee5d5214f4b1e2ac49f11889d58e71a">
+        <dex dex="/Users/John2014/Documents/geoshare_final/app/build/intermediates/pre-dexed/debug/com.google.android.gms-play-services-drive-8.4.0_95f7a4997bcc984a5c0bbda0f57e6e7aa51175af.jar" />
+    </item>
+    <item
+        jar="/Users/John2014/Documents/geoshare_final/app/build/intermediates/exploded-aar/com.google.android.gms/play-services-appindexing/8.4.0/jars/classes.jar"
+        jumboMode="false"
+        revision="23.0.2"
+        sha1="65d086ee9daaf87b5af62ad24471edafa433354c">
+        <dex dex="/Users/John2014/Documents/geoshare_final/app/build/intermediates/pre-dexed/debug/com.google.android.gms-play-services-appindexing-8.4.0_a432b953945f98e35cda7c1e390f57eb38fa1e9e.jar" />
+    </item>
+    <item
+        jar="/Users/John2014/Documents/geoshare_final/app/build/intermediates/exploded-aar/com.google.android.gms/play-services-gcm/8.4.0/jars/classes.jar"
+        jumboMode="false"
+        revision="23.0.2"
+        sha1="2d7fe76982677315c4dc4edfb459c8ca718a9d4c">
+        <dex dex="/Users/John2014/Documents/geoshare_final/app/build/intermediates/pre-dexed/debug/com.google.android.gms-play-services-gcm-8.4.0_80760a36878b619644a31a727d679ef7e82c408f.jar" />
+    </item>
+    <item
+        jar="/Users/John2014/Documents/geoshare_final/app/build/intermediates/exploded-aar/com.google.android.gms/play-services-analytics/8.4.0/jars/classes.jar"
+        jumboMode="false"
+        revision="23.0.2"
+        sha1="1c9f35e952b212c843f7bd2c7eec8e82ad95602e">
+        <dex dex="/Users/John2014/Documents/geoshare_final/app/build/intermediates/pre-dexed/debug/com.google.android.gms-play-services-analytics-8.4.0_d36dfdcb052c2d2ceae494b40aba925d9cb96618.jar" />
+    </item>
+    <item
+        jar="/Users/John2014/Documents/geoshare_final/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.1.1/jars/classes.jar"
+        jumboMode="false"
+        revision="23.0.2"
+        sha1="5c5699834e9722f1c288fea2de82725d078ba127">
+        <dex dex="/Users/John2014/Documents/geoshare_final/app/build/intermediates/pre-dexed/debug/com.android.support-appcompat-v7-23.1.1_b28697e6c5cea14aa9768a9e4f0ddca61c8a6f2e.jar" />
+    </item>
+    <item
+        jar="/Users/John2014/Documents/geoshare_final/app/build/intermediates/exploded-aar/com.android.support/mediarouter-v7/23.0.0/jars/classes.jar"
+        jumboMode="false"
+        revision="23.0.2"
+        sha1="d358b3dd49a7c67844622dcbc9cf4339e13952ce">
+        <dex dex="/Users/John2014/Documents/geoshare_final/app/build/intermediates/pre-dexed/debug/com.android.support-mediarouter-v7-23.0.0_36c76c70572fb30a65de2647bfe62805557e6327.jar" />
+    </item>
+    <item
+        jar="/Users/John2014/Documents/geoshare_final/app/build/intermediates/exploded-aar/com.android.support/recyclerview-v7/23.1.1/jars/classes.jar"
+        jumboMode="false"
+        revision="23.0.2"
+        sha1="09c5e804bc67fc0580360043dff067df574a60d4">
+        <dex dex="/Users/John2014/Documents/geoshare_final/app/build/intermediates/pre-dexed/debug/com.android.support-recyclerview-v7-23.1.1_93315ec8ef9e75eabca60a9d00ecf0c87364f658.jar" />
+    </item>
+    <item
+        jar="/Users/John2014/Documents/geoshare_final/app/build/intermediates/exploded-aar/com.google.android.gms/play-services-plus/8.4.0/jars/classes.jar"
+        jumboMode="false"
+        revision="23.0.2"
+        sha1="1a78298e7724d5440d210bcb946b3493250d354d">
+        <dex dex="/Users/John2014/Documents/geoshare_final/app/build/intermediates/pre-dexed/debug/com.google.android.gms-play-services-plus-8.4.0_d52b6ac88fca83abd173f56cef55a52142f03306.jar" />
+    </item>
+    <item
+        jar="/Users/John2014/.gradle/caches/modules-2/files-2.1/com.squareup.okhttp3/okhttp/3.2.0/f7873a2ebde246a45c2a8d6f3247108b4c88a879/okhttp-3.2.0.jar"
+        jumboMode="false"
+        revision="23.0.2"
+        sha1="f7873a2ebde246a45c2a8d6f3247108b4c88a879">
+        <dex dex="/Users/John2014/Documents/geoshare_final/app/build/intermediates/pre-dexed/debug/okhttp-3.2.0_bb04ed6cfc91f5fcd1005361d2001858fd39f0ed.jar" />
+    </item>
+    <item
+        jar="/Users/John2014/Documents/geoshare_final/app/build/intermediates/exploded-aar/com.android.support/design/23.1.1/jars/classes.jar"
+        jumboMode="false"
+        revision="23.0.2"
+        sha1="379471b2bd17d9737c050345c08e8c7d16589784">
+        <dex dex="/Users/John2014/Documents/geoshare_final/app/build/intermediates/pre-dexed/debug/com.android.support-design-23.1.1_caa3320c0bff0716d8fda12ec7998d56cac16d75.jar" />
+    </item>
+    <item
+        jar="/Users/John2014/Documents/geoshare_final/app/build/intermediates/exploded-aar/com.google.android.gms/play-services-measurement/8.4.0/jars/classes.jar"
+        jumboMode="false"
+        revision="23.0.2"
+        sha1="613298b7aa012f121ce542881c0a599ebd8078f2">
+        <dex dex="/Users/John2014/Documents/geoshare_final/app/build/intermediates/pre-dexed/debug/com.google.android.gms-play-services-measurement-8.4.0_d702d0be710939b87e8ac6e448a29a92f7fa2619.jar" />
+    </item>
+    <item
+        jar="/Users/John2014/Documents/geoshare_final/app/build/intermediates/exploded-aar/com.google.android.gms/play-services-ads/8.4.0/jars/classes.jar"
+        jumboMode="false"
+        revision="23.0.2"
+        sha1="b5e7892fb0708e792e0e933c4c0a0ca0ac7831fb">
+        <dex dex="/Users/John2014/Documents/geoshare_final/app/build/intermediates/pre-dexed/debug/com.google.android.gms-play-services-ads-8.4.0_6346e5fd2d6878d46b46d96336b5b3e61386721a.jar" />
+    </item>
+    <item
+        jar="/Users/John2014/Documents/geoshare_final/app/build/intermediates/exploded-aar/com.google.android.gms/play-services-maps/8.4.0/jars/classes.jar"
+        jumboMode="false"
+        revision="23.0.2"
+        sha1="04de44f90606c77f3b28cf44861f306290505aac">
+        <dex dex="/Users/John2014/Documents/geoshare_final/app/build/intermediates/pre-dexed/debug/com.google.android.gms-play-services-maps-8.4.0_5ba20dcf029d45ed2a7a4fbbf391233fcb296c3e.jar" />
+    </item>
+    <item
+        jar="/Users/John2014/Documents/geoshare_final/app/build/intermediates/exploded-aar/com.google.android.gms/play-services-basement/8.4.0/jars/classes.jar"
+        jumboMode="false"
+        revision="23.0.2"
+        sha1="8e673cdfadd8f2d98fdb2fda2285c30f6e449782">
+        <dex dex="/Users/John2014/Documents/geoshare_final/app/build/intermediates/pre-dexed/debug/com.google.android.gms-play-services-basement-8.4.0_6ef5a9cf5b1e50cbf276c9ad42c2fa5ea6880609.jar" />
+    </item>
+    <item
+        jar="/Users/John2014/Documents/geoshare_final/app/build/intermediates/exploded-aar/com.google.android.gms/play-services-panorama/8.4.0/jars/classes.jar"
+        jumboMode="false"
+        revision="23.0.2"
+        sha1="08d34b2d135c1cc96ab506fd8bf6916d1e2f391a">
+        <dex dex="/Users/John2014/Documents/geoshare_final/app/build/intermediates/pre-dexed/debug/com.google.android.gms-play-services-panorama-8.4.0_2a4f40c6fe3ca9756b7fcbe514b5e35cf7853772.jar" />
+    </item>
+    <item
+        jar="/Users/John2014/Documents/geoshare_final/app/build/intermediates/exploded-aar/com.android.support/support-v4/23.1.1/jars/classes.jar"
+        jumboMode="false"
+        revision="23.0.2"
+        sha1="6cbc7773921fcfedbe55657578f0cbfe614778dc">
+        <dex dex="/Users/John2014/Documents/geoshare_final/app/build/intermediates/pre-dexed/debug/com.android.support-support-v4-23.1.1_b38ee8b0f3de48c2331c4b07f08bbf5bcee2b7a6.jar" />
+    </item>
+    <item
+        jar="/Users/John2014/Documents/geoshare_final/app/build/intermediates/exploded-aar/com.google.android.gms/play-services-auth/8.4.0/jars/classes.jar"
+        jumboMode="false"
+        revision="23.0.2"
+        sha1="966e5771a5a2ebfb31bf00d7cd6cd2546d245517">
+        <dex dex="/Users/John2014/Documents/geoshare_final/app/build/intermediates/pre-dexed/debug/com.google.android.gms-play-services-auth-8.4.0_f308768b1cca0fda2a40a15c96aed2257b6310bd.jar" />
+    </item>
+    <item
+        jar="/Users/John2014/Documents/geoshare_final/app/build/intermediates/exploded-aar/com.google.android.gms/play-services-safetynet/8.4.0/jars/classes.jar"
+        jumboMode="false"
+        revision="23.0.2"
+        sha1="0194a7409c40de94fb539d4ad9928ec5d47afeb7">
+        <dex dex="/Users/John2014/Documents/geoshare_final/app/build/intermediates/pre-dexed/debug/com.google.android.gms-play-services-safetynet-8.4.0_86a5e2d85f3bb408b0331ce32fe339299e014924.jar" />
+    </item>
+    <item
+        jar="/Users/John2014/Documents/geoshare_final/app/build/intermediates/exploded-aar/com.google.android.gms/play-services-wallet/8.4.0/jars/classes.jar"
+        jumboMode="false"
+        revision="23.0.2"
+        sha1="f2df436a8f02ce7e4d7d209671fc45f97c470f0e">
+        <dex dex="/Users/John2014/Documents/geoshare_final/app/build/intermediates/pre-dexed/debug/com.google.android.gms-play-services-wallet-8.4.0_8c3216bca31cf00279d939d80db6da7099795bce.jar" />
+    </item>
+
+</items>
